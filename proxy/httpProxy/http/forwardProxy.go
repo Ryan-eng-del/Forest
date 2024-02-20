@@ -16,12 +16,12 @@ type Proxy struct {
 
 }
 
-func main() {
-	proxy :=  &Proxy{}
-	// http.HandleFunc("/", proxy.ServeHTTP)
-	http.Handle("/", proxy)
-	http.ListenAndServe(":8080", nil)
-}
+// func main() {
+// 	proxy :=  &Proxy{}
+// 	// http.HandleFunc("/", proxy.ServeHTTP)
+// 	http.Handle("/", proxy)
+// 	http.ListenAndServe(":8080", nil)
+// }
 
 
 func (p *Proxy) ServeHTTP(rsw http.ResponseWriter, req *http.Request) {
