@@ -1,10 +1,15 @@
 package main
 
 import (
+	"bytes"
+	"io"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -46,11 +51,42 @@ func main() {
 }
 
 
+var DefaultTransport http.RoundTripper = &http.Transport{
+	DialContext: (&net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}).DialContext,
+	MaxIdleConns:          129,
+	IdleConnTimeout:       90 * time.Second,
+	TLSHandshakeTimeout:   10 * time.Second,
+	ExpectContinueTimeout: 1 * time.Second,
+}
+
 func NewSingleHostReverseProxy(target *url.URL) *httputil.ReverseProxy {
 	director := func(req *http.Request) {
 		rewriteRequestURL(req, target)
 	}
-	return &httputil.ReverseProxy{Director: director}
+	ModifyResponse :=  func( r *http.Response) error {
+		if r.StatusCode == 200 {
+			srcBody, err := io.ReadAll(r.Body)
+			if err != nil {
+				return err
+			}
+			newBody := []byte(string(srcBody) + " Hello")
+			r.Body = io.NopCloser(bytes.NewBuffer(newBody))
+			len := int64(len(newBody))
+
+			r.ContentLength = len
+			r.Header.Set("Content-Length", strconv.FormatInt(len, 10))
+		}
+		return nil
+	}
+
+	ErrorHandler := func(w http.ResponseWriter, r *http.Request, e error) {
+		http.Error(w, "ErrorHandler " + e.Error(), http.StatusBadGateway)
+	}
+
+	return &httputil.ReverseProxy{Director: director, ModifyResponse: ModifyResponse, ErrorHandler: ErrorHandler, Transport: DefaultTransport}
 }
 
 
