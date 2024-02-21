@@ -67,6 +67,13 @@ func NewSingleHostReverseProxy(target *url.URL) *httputil.ReverseProxy {
 		rewriteRequestURL(req, target)
 	}
 	ModifyResponse :=  func( r *http.Response) error {
+		if r.StatusCode == 101 {
+			if strings.Contains(r.Header.Get("Connection"), "Upgrade") {
+				return nil
+			}
+		}
+
+		
 		if r.StatusCode == 200 {
 			srcBody, err := io.ReadAll(r.Body)
 			if err != nil {
