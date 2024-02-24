@@ -21,7 +21,13 @@ func main() {
 	proxy := NewSingleHostReverseProxy(downstreamAddr1)
 	http.ListenAndServe(":80", proxy)
 
-	
+	// 服务端源码入口
+	// http.HandleFunc()
+	// http.ListenAndServe()
+
+	// 客户端源码入口
+	// http.Get()
+
 	// http 代理实现
 	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 	// 	log.Println("request path is ", r.URL.Path)
@@ -73,7 +79,7 @@ func NewSingleHostReverseProxy(target *url.URL) *httputil.ReverseProxy {
 			}
 		}
 
-		
+
 		if r.StatusCode == 200 {
 			srcBody, err := io.ReadAll(r.Body)
 			if err != nil {
