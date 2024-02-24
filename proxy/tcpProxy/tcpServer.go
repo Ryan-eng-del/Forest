@@ -35,7 +35,7 @@ var ErrAbortHandler = errors.New("net/http: abort Handler")
 
 
 type TCPHandler interface {
-	ServeTCP(context.Context, *conn)
+	ServeTCP(context.Context, net.Conn)
 }
 
 type onceCloseListener struct {
@@ -155,9 +155,9 @@ func (srv *TCPServer) newConn(rwc net.Conn) *conn {
 type tcpHandler struct {
 }
 
-func (t *tcpHandler) ServeTCP(ctx context.Context, conn *conn){
+func (t *tcpHandler) ServeTCP(ctx context.Context, conn net.Conn){
 	// http.ListenAndServe()
-	conn.rwc.Write([]byte("Pong! Tcp handler here"))
+	conn.Write([]byte("Pong! Tcp handler here"))
 }
 
 
@@ -189,7 +189,7 @@ func (c *conn) serve(ctx context.Context) {
 		}
 
 	}()
-	c.server.Handler.ServeTCP(ctx, c)
+	c.server.Handler.ServeTCP(ctx, c.rwc)
 	// serverHandler{c.server}.ServeTCP(ctx, c)
 }
 
