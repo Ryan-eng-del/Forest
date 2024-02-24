@@ -1,0 +1,13 @@
+syntax="proto3";
+package proto.person;
+option go_package="gateway/proxy/grpcProxy/Grpc/pb;person";
+
+message Person {
+  string name = 1;
+  int32 age = 2;
+}
+
+
+service HelloService {
+  rpc Hello (Person) returns (Person) {};
+}
