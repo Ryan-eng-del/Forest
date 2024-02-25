@@ -19,7 +19,7 @@ type Client struct {
 }
 
 func NewClient () (*Client, error)  {
-	grpcConn, err := grpc.Dial("localhost:8001", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	grpcConn, err := grpc.Dial("localhost:8085", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		log.Println(err)
@@ -43,9 +43,9 @@ func ClientFunc() {
 func (c *Client) MyHello() {
 	md := metadata.Pairs("timestamp", time.Now().Format(time.StampNano))
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
-	reply, err := c.Hello(ctx, &person.Person{Name: ""})
+	reply, err := c.Hello(ctx, &person.Person{Name: "Client"})
 	if err != nil {
-		log.Println(err)
+		log.Println(err, reply)
 		return
 	}
 
@@ -71,7 +71,7 @@ func (c *Client) MyServerStreamHello() {
 			}
 			break
 		}
-		log.Println(msg)
+		log.Println(msg, "reply MyServerStreamHello")
 	}
 
 	if isReadAll {
@@ -108,7 +108,7 @@ func (c *Client) MyClientStreamHello() {
 		return
 	}
 
-	log.Println(msg)
+	log.Println(msg, "reply MyClientStreamHello")
 }
 
 func (c *Client) MyBidirectionalStreamHello() {

@@ -61,7 +61,6 @@ func (s *HelloService) Hello(ctx context.Context, p *person.Person) (*person.Per
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
 		fmt.Println(md)
 	}
-
 	return &person.Person{
 		Name: "ServerName",
 	}, nil

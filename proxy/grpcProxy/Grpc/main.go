@@ -26,7 +26,6 @@ func main() {
 		<- serverStart
 		log.Println("开始调用")
 		ClientFunc()
-		
 	}()
 
 	quit := make(chan os.Signal, 1)
