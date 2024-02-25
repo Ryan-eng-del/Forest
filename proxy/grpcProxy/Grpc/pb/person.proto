@@ -10,4 +10,7 @@ message Person {
 
 service HelloService {
   rpc Hello (Person) returns (Person) {};
+  rpc ServerStreamHello (Person) returns (stream Person) {};
+  rpc ClientStreamHello (stream Person) returns (Person) {};
+  rpc BidirectionalStreamHello (stream Person) returns (stream Person) {};
 }

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.25.0
-// source: proxy/grpcProxy/Grpc/pb/person.proto
+// source: pb/person.proto
 
 package person
 
@@ -19,7 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	HelloService_Hello_FullMethodName = "/proto.person.HelloService/Hello"
+	HelloService_Hello_FullMethodName                    = "/proto.person.HelloService/Hello"
+	HelloService_ServerStreamHello_FullMethodName        = "/proto.person.HelloService/ServerStreamHello"
+	HelloService_ClientStreamHello_FullMethodName        = "/proto.person.HelloService/ClientStreamHello"
+	HelloService_BidirectionalStreamHello_FullMethodName = "/proto.person.HelloService/BidirectionalStreamHello"
 )
 
 // HelloServiceClient is the client API for HelloService service.
@@ -27,6 +30,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HelloServiceClient interface {
 	Hello(ctx context.Context, in *Person, opts ...grpc.CallOption) (*Person, error)
+	ServerStreamHello(ctx context.Context, in *Person, opts ...grpc.CallOption) (HelloService_ServerStreamHelloClient, error)
+	ClientStreamHello(ctx context.Context, opts ...grpc.CallOption) (HelloService_ClientStreamHelloClient, error)
+	BidirectionalStreamHello(ctx context.Context, opts ...grpc.CallOption) (HelloService_BidirectionalStreamHelloClient, error)
 }
 
 type helloServiceClient struct {
@@ -46,11 +52,111 @@ func (c *helloServiceClient) Hello(ctx context.Context, in *Person, opts ...grpc
 	return out, nil
 }
 
+func (c *helloServiceClient) ServerStreamHello(ctx context.Context, in *Person, opts ...grpc.CallOption) (HelloService_ServerStreamHelloClient, error) {
+	stream, err := c.cc.NewStream(ctx, &HelloService_ServiceDesc.Streams[0], HelloService_ServerStreamHello_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &helloServiceServerStreamHelloClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type HelloService_ServerStreamHelloClient interface {
+	Recv() (*Person, error)
+	grpc.ClientStream
+}
+
+type helloServiceServerStreamHelloClient struct {
+	grpc.ClientStream
+}
+
+func (x *helloServiceServerStreamHelloClient) Recv() (*Person, error) {
+	m := new(Person)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *helloServiceClient) ClientStreamHello(ctx context.Context, opts ...grpc.CallOption) (HelloService_ClientStreamHelloClient, error) {
+	stream, err := c.cc.NewStream(ctx, &HelloService_ServiceDesc.Streams[1], HelloService_ClientStreamHello_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &helloServiceClientStreamHelloClient{stream}
+	return x, nil
+}
+
+type HelloService_ClientStreamHelloClient interface {
+	Send(*Person) error
+	CloseAndRecv() (*Person, error)
+	grpc.ClientStream
+}
+
+type helloServiceClientStreamHelloClient struct {
+	grpc.ClientStream
+}
+
+func (x *helloServiceClientStreamHelloClient) Send(m *Person) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *helloServiceClientStreamHelloClient) CloseAndRecv() (*Person, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(Person)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *helloServiceClient) BidirectionalStreamHello(ctx context.Context, opts ...grpc.CallOption) (HelloService_BidirectionalStreamHelloClient, error) {
+	stream, err := c.cc.NewStream(ctx, &HelloService_ServiceDesc.Streams[2], HelloService_BidirectionalStreamHello_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &helloServiceBidirectionalStreamHelloClient{stream}
+	return x, nil
+}
+
+type HelloService_BidirectionalStreamHelloClient interface {
+	Send(*Person) error
+	Recv() (*Person, error)
+	grpc.ClientStream
+}
+
+type helloServiceBidirectionalStreamHelloClient struct {
+	grpc.ClientStream
+}
+
+func (x *helloServiceBidirectionalStreamHelloClient) Send(m *Person) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *helloServiceBidirectionalStreamHelloClient) Recv() (*Person, error) {
+	m := new(Person)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // HelloServiceServer is the server API for HelloService service.
 // All implementations must embed UnimplementedHelloServiceServer
 // for forward compatibility
 type HelloServiceServer interface {
 	Hello(context.Context, *Person) (*Person, error)
+	ServerStreamHello(*Person, HelloService_ServerStreamHelloServer) error
+	ClientStreamHello(HelloService_ClientStreamHelloServer) error
+	BidirectionalStreamHello(HelloService_BidirectionalStreamHelloServer) error
 	mustEmbedUnimplementedHelloServiceServer()
 }
 
@@ -60,6 +166,15 @@ type UnimplementedHelloServiceServer struct {
 
 func (UnimplementedHelloServiceServer) Hello(context.Context, *Person) (*Person, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Hello not implemented")
+}
+func (UnimplementedHelloServiceServer) ServerStreamHello(*Person, HelloService_ServerStreamHelloServer) error {
+	return status.Errorf(codes.Unimplemented, "method ServerStreamHello not implemented")
+}
+func (UnimplementedHelloServiceServer) ClientStreamHello(HelloService_ClientStreamHelloServer) error {
+	return status.Errorf(codes.Unimplemented, "method ClientStreamHello not implemented")
+}
+func (UnimplementedHelloServiceServer) BidirectionalStreamHello(HelloService_BidirectionalStreamHelloServer) error {
+	return status.Errorf(codes.Unimplemented, "method BidirectionalStreamHello not implemented")
 }
 func (UnimplementedHelloServiceServer) mustEmbedUnimplementedHelloServiceServer() {}
 
@@ -92,6 +207,79 @@ func _HelloService_Hello_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HelloService_ServerStreamHello_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(Person)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(HelloServiceServer).ServerStreamHello(m, &helloServiceServerStreamHelloServer{stream})
+}
+
+type HelloService_ServerStreamHelloServer interface {
+	Send(*Person) error
+	grpc.ServerStream
+}
+
+type helloServiceServerStreamHelloServer struct {
+	grpc.ServerStream
+}
+
+func (x *helloServiceServerStreamHelloServer) Send(m *Person) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _HelloService_ClientStreamHello_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(HelloServiceServer).ClientStreamHello(&helloServiceClientStreamHelloServer{stream})
+}
+
+type HelloService_ClientStreamHelloServer interface {
+	SendAndClose(*Person) error
+	Recv() (*Person, error)
+	grpc.ServerStream
+}
+
+type helloServiceClientStreamHelloServer struct {
+	grpc.ServerStream
+}
+
+func (x *helloServiceClientStreamHelloServer) SendAndClose(m *Person) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *helloServiceClientStreamHelloServer) Recv() (*Person, error) {
+	m := new(Person)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _HelloService_BidirectionalStreamHello_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(HelloServiceServer).BidirectionalStreamHello(&helloServiceBidirectionalStreamHelloServer{stream})
+}
+
+type HelloService_BidirectionalStreamHelloServer interface {
+	Send(*Person) error
+	Recv() (*Person, error)
+	grpc.ServerStream
+}
+
+type helloServiceBidirectionalStreamHelloServer struct {
+	grpc.ServerStream
+}
+
+func (x *helloServiceBidirectionalStreamHelloServer) Send(m *Person) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *helloServiceBidirectionalStreamHelloServer) Recv() (*Person, error) {
+	m := new(Person)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // HelloService_ServiceDesc is the grpc.ServiceDesc for HelloService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -104,6 +292,23 @@ var HelloService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _HelloService_Hello_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "proxy/grpcProxy/Grpc/pb/person.proto",
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "ServerStreamHello",
+			Handler:       _HelloService_ServerStreamHello_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ClientStreamHello",
+			Handler:       _HelloService_ClientStreamHello_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "BidirectionalStreamHello",
+			Handler:       _HelloService_BidirectionalStreamHello_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
+	Metadata: "pb/person.proto",
 }
