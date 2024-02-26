@@ -5,13 +5,30 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"sort"
 	"unicode/utf8"
 )
 
+type UInt32Slice []uint32
+
+func (a UInt32Slice) Len() int {
+	return len(a)
+}
+
+func (a UInt32Slice) Less (i, j int) bool {
+	return a[i] < a[j]
+}
+
+func (a UInt32Slice) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}	
 func main() {
 	r, s := utf8.DecodeRune([]byte("a你好"))
 	fmt.Println(string(r), s)
-
+	a := UInt32Slice{1, 0, 4}
+	sort.Sort(a)
+	fmt.Println(a)
+	// sort.Sort(s)
 	// a := []int{1, 2, 5}
 	b := make([]byte, 512, 512)
 	
