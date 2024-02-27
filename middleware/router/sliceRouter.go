@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"context"
@@ -53,9 +53,13 @@ func (c *SliceRouteContext) Reset() {
 	c.Index = -1;
 }
 
+func (c *SliceRouteContext) Abort() {
+	c.Index = -1
+}
+
 func (c *SliceRouteContext) Next() {
 	c.Index++
-	for c.Index < len(c.Handler) {
+	for c.Index < len(c.Handler) && c.Index >= 0{
 		c.Handler[c.Index](c)
 		c.Index++
 	}
