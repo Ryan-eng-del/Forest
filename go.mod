@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/go-zookeeper/zk v1.0.3 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/smartystreets/goconvey v1.8.1 // indirect
 	golang.org/x/net v0.20.0 // indirect
