@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	zookeeper "go-gateway/middleware/serverDiscovery/zooKeeper"
 	"log"
 	"net/http"
 	"os"
@@ -14,9 +15,19 @@ type Server struct{
 }
 
 func main() {
-	server := &Server{Addr: "localhost:8001"}
+	server := &Server{Addr: "127.0.0.1:8001"}
 
-	server.Run()
+	go func ()  {
+		server.Run()
+	}()
+
+	server1 := &Server{Addr: "127.0.0.1:8002"}
+
+	go func ()  {
+		server1.Run()
+	}()
+
+	// server.Run()
 
 	// signals := make(chan struct{}, 1)
 	// signals <- struct{}{}
@@ -28,7 +39,6 @@ func main() {
 }
 
 func (s *Server) Run() {
-
 	mux := http.NewServeMux()
 	mux.HandleFunc("/real", s.ServeHTTP)
 	server := &http.Server {
@@ -37,6 +47,19 @@ func (s *Server) Run() {
 	}
 	
 	go func ()  {
+		zk := zookeeper.NewZkManager([]string{"127.0.0.1:2181"})
+		err := zk.GetConnection()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		defer zk.Close()
+		err = zk.RegisterServerPath(zookeeper.NodeName, server.Addr)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println("Register", server.Addr)
 		log.Fatal(server.ListenAndServe())
 	}()
 }
