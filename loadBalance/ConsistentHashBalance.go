@@ -1,9 +1,10 @@
-package main
+package loadbalance
 
 import (
 	"hash/crc32"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -14,6 +15,7 @@ type ConsistentHashBalance struct {
 	hashMap map[uint32]string
 	replicas int
 	mux sync.Mutex
+	conf LoadBalanceConf
 }
 
 func (cs *ConsistentHashBalance) Get(addr string) string {
@@ -29,6 +31,7 @@ func (cs *ConsistentHashBalance) Get(addr string) string {
 	
 	return cs.hashMap[cs.hashKeys[index]]
 }
+
 func (cs *ConsistentHashBalance) Add(addrs ...string) {
 	cs.mux.Lock()
 	defer cs.mux.Unlock()
@@ -42,6 +45,21 @@ func (cs *ConsistentHashBalance) Add(addrs ...string) {
 	}
 
 	sort.Sort(cs.hashKeys)
+}
+
+func (cs *ConsistentHashBalance) Update() {
+	if conf, ok := cs.conf.(*LoadBalanceZkConf); ok {
+		cs.hashKeys = nil
+		cs.hashMap = nil
+
+		for _, ip := range conf.GetConf() {
+			cs.Add(strings.Split(ip, ",")...)
+		}
+	}
+}
+
+func (cs *ConsistentHashBalance) SetConf(conf LoadBalanceConf) {
+	cs.conf = conf
 }
 
 func NewConsistentHashBalance (replicas int, hash Hash) *ConsistentHashBalance {

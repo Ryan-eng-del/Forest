@@ -1,8 +1,11 @@
-package main
+package httpProxy
 
 import (
 	"bytes"
+	"context"
+	loadbalance "go-gateway/loadBalance"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -66,6 +69,49 @@ var DefaultTransport http.RoundTripper = &http.Transport{
 	IdleConnTimeout:       90 * time.Second,
 	TLSHandshakeTimeout:   10 * time.Second,
 	ExpectContinueTimeout: 1 * time.Second,
+}
+
+
+func NewLoadBalanceReverseProxy(ctx context.Context, loadBalance loadbalance.LoadBalance) *httputil.ReverseProxy{
+	director := func(req *http.Request) {
+		// if l, err := loadBalance.(*loadbalance.RoundRobinBalance); err != nil {
+
+		// }
+		nextAddr := "http://" + loadBalance.Get(req.URL.String())
+		target, err := url.Parse(nextAddr)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		rewriteRequestURL(req, target)
+	}
+
+	ModifyResponse :=  func( r *http.Response) error {
+		if r.StatusCode == 101 {
+			if strings.Contains(r.Header.Get("Connection"), "Upgrade") {
+				return nil
+			}
+		}
+		if r.StatusCode == 200 {
+			srcBody, err := io.ReadAll(r.Body)
+			if err != nil {
+				return err
+			}
+			newBody := []byte(string(srcBody) + " Hello")
+			r.Body = io.NopCloser(bytes.NewBuffer(newBody))
+			len := int64(len(newBody))
+
+			r.ContentLength = len
+			r.Header.Set("Content-Length", strconv.FormatInt(len, 10))
+		}
+		return nil
+	}
+
+	ErrorHandler := func(w http.ResponseWriter, r *http.Request, e error) {
+		http.Error(w, "ErrorHandler " + e.Error(), http.StatusBadGateway)
+	}
+
+	return &httputil.ReverseProxy{Director: director, ModifyResponse: ModifyResponse, ErrorHandler: ErrorHandler, Transport: DefaultTransport}
 }
 
 func NewSingleHostReverseProxy(target *url.URL) *httputil.ReverseProxy {

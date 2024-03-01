@@ -1,9 +1,10 @@
 // 加权轮训算法
-package main
+package loadbalance
 
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -15,12 +16,15 @@ const (
 type WeightRoundRobinBalance struct {
 	ServeNodes []*ServerNode
 	CurIndex int
+	conf LoadBalanceConf
 }
 
 type WeightParameters struct {
 	addr string
 	weight int
 }
+
+
 
 func (r *WeightRoundRobinBalance) Callback(addr string, flag bool) {
 	for _, node := range r.ServeNodes {
@@ -39,13 +43,29 @@ func (r *WeightRoundRobinBalance) Callback(addr string, flag bool) {
 	}
 }
 
-func (r *WeightRoundRobinBalance) Add(addrs ...WeightParameters) {
+// func (r *WeightRoundRobinBalance) Add(addrs ...WeightParameters) {
+// 	if (len(addrs) > 0) {
+// 		for _, addr := range addrs {
+// 			node := &ServerNode {
+// 				Addr: addr.addr,
+// 				Weight: addr.weight,
+// 				EffectiveWeight: addr.weight,
+// 				MaxFails: maxFails,
+// 				FailTimeout: failTimeout,
+// 			}
+// 			r.ServeNodes = append(r.ServeNodes, node)
+// 		}
+// 	}
+// }
+
+
+func (r *WeightRoundRobinBalance) Add(addrs ...string) {
 	if (len(addrs) > 0) {
 		for _, addr := range addrs {
 			node := &ServerNode {
-				Addr: addr.addr,
-				Weight: addr.weight,
-				EffectiveWeight: addr.weight,
+				Addr: addr,
+				Weight: 10,
+				EffectiveWeight: 10,
 				MaxFails: maxFails,
 				FailTimeout: failTimeout,
 			}
@@ -54,6 +74,24 @@ func (r *WeightRoundRobinBalance) Add(addrs ...WeightParameters) {
 	}
 }
 
+func (cs *WeightRoundRobinBalance) Get(addr string) string {
+	return ""
+}
+
+
+func (cs *WeightRoundRobinBalance) Update() {
+	if conf, ok := cs.conf.(*LoadBalanceZkConf); ok {
+		for _, ip := range conf.GetConf() {
+			is := strings.Split(ip, ",")
+			cs.Add(is...)
+		}
+	}
+}
+
+
+func (cs *WeightRoundRobinBalance) SetConf(conf LoadBalanceConf) {
+	cs.conf = conf
+}
 
 func (r *WeightRoundRobinBalance) Next() (string, error){
 	var effectiveTotal = 0

@@ -47,7 +47,7 @@ func (s *Server) Run() {
 	}
 	
 	go func ()  {
-		zk := zookeeper.NewZkManager([]string{"127.0.0.1:2181"})
+		zk := zookeeper.NewZkManager([]string{"localhost:2181", "localhost:2182", "localhost:2183"})
 		err := zk.GetConnection()
 		if err != nil {
 			log.Println(err)

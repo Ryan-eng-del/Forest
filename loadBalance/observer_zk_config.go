@@ -1,11 +1,10 @@
-package load_balance
+package loadbalance
 
 import (
 	"go-gateway/middleware/serverDiscovery/observer"
 	zookeeper "go-gateway/middleware/serverDiscovery/zooKeeper"
 	"log"
 )
-
 
 type LoadBalanceObserver struct {
 	zkConf *LoadBalanceZkConf
@@ -24,7 +23,7 @@ func (o *LoadBalanceObserver) Update() {
 type LoadBalanceConf interface {
 	Attach (o observer.Observer)
 	GetConf () []string
-	WatchConf()
+	WatchConf(lb LoadBalance)
 	UpdateConf(conf []string)
 }
 
@@ -39,6 +38,7 @@ type LoadBalanceZkConf struct {
 
 func (s *LoadBalanceZkConf) UpdateConf (conf []string) {
 	s.activeList = conf
+	log.Println(s.observers, "Observers")
 	for _, o := range s.observers {
 		o.Update()
 	}
@@ -52,7 +52,7 @@ func (s *LoadBalanceZkConf) GetConf () []string {
 	return s.activeList
 }
 
-func (s *LoadBalanceZkConf) WatchConf() {
+func (s *LoadBalanceZkConf) WatchConf(lb LoadBalance) {
 	zk := zookeeper.NewZkManager(s.zkHost)
 	zk.GetConnection()
 	chanList, chanErr := zk.WatchServerListByPath(s.path)
@@ -64,15 +64,12 @@ func (s *LoadBalanceZkConf) WatchConf() {
 			case changeErr := <- chanErr:
 				log.Println("changeErr:", changeErr)
 			case changeList := <- chanList:
-				log.Println("watch node changed")
+				log.Println("watch node changed", changeList)
 				s.UpdateConf(changeList)
 			}
 		} 
 	}()
 }
-
-
-
 
 func NewLoadBalanceZkConf(format, path string, zkHosts []string, conf map[string]string ) (*LoadBalanceZkConf, error) {
 	zk := zookeeper.NewZkManager(zkHosts)
@@ -93,7 +90,6 @@ func NewLoadBalanceZkConf(format, path string, zkHosts []string, conf map[string
 		path: path,
 	}
 
-	mConf.WatchConf()
 	return mConf, nil
 }
 
