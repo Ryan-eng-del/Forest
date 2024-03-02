@@ -1,11 +1,11 @@
-package main
+package grpcProxy
 
 import (
 	"context"
+	loadbalance "go-gateway/loadBalance"
 	person "go-gateway/proxy/grpcProxy/Grpc/pb"
 	"io"
 	"log"
-	"net"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -14,23 +14,24 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func main() {
-	listener, err := net.Listen("tcp", "localhost:8085")
+// func main() {
+// 	listener, err := net.Listen("tcp", "localhost:8085")
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// 	option := grpc.UnknownServiceHandler(handler)
+// 	s := grpc.NewServer(option)
+// 	s.Serve(listener)
+// }
 
-	if err != nil {
-		log.Println(err)
-	}
-	option := grpc.UnknownServiceHandler(handler)
-	s := grpc.NewServer(option)
-	s.Serve(listener)
-}
-
-func handler (srv any, pxyServerStream grpc.ServerStream) error {
+func (h *HandlerCompose) handler (srv any, pxyServerStream grpc.ServerStream) error {
 	methodName, _ := grpc.MethodFromServerStream(pxyServerStream)
 
 	ctx := pxyServerStream.Context()
 
-	pxyClientConn, err := grpc.DialContext(ctx, "localhost:8001", grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	ctx, pxyClientConn, err := h.director(ctx, methodName)
+	// pxyClientConn, err := grpc.DialContext(ctx, "localhost:8001", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		log.Println(err)
@@ -127,4 +128,25 @@ func ProxyServerToRealClient(dst grpc.ServerStream, src grpc.ClientStream) <- ch
 
 
 	return res
+}
+
+type GrpcDirector func (context.Context, string) (context.Context, *grpc.ClientConn, error)
+
+type HandlerCompose struct {
+	director GrpcDirector
+}
+
+func TransportHandler(director GrpcDirector) grpc.StreamHandler {
+	return (&HandlerCompose{director}).handler
+}
+
+func NewGrpcLoadBalanceHandler(lb loadbalance.LoadBalance) grpc.StreamHandler    {
+	return func ()grpc.StreamHandler {
+		director := func (ctx context.Context, fullMethodName string) (context.Context, *grpc.ClientConn, error){
+			nextAddr := lb.Get(fullMethodName)
+			pxyClientConn, err := grpc.DialContext(ctx, nextAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			return ctx, pxyClientConn, err
+		}
+		return TransportHandler(director)
+	}()
 }
