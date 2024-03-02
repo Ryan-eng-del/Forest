@@ -1,4 +1,4 @@
-package main
+package tcpProxy
 
 import (
 	"context"

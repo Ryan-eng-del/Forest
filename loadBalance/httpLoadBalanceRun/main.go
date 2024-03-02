@@ -12,9 +12,8 @@ import (
 
 func main() {
 	conf, err := loadbalance.NewLoadBalanceZkConf("http://%s/", zookeeper.NodeName, []string{"localhost:2181", "localhost:2182", "localhost:2183"}, map[string]string{
-		"localhost:8081": "10",
-		"localhost:8082": "1",
-		"localhost:8000": "2",
+		"localhost:8001": "10",
+		"localhost:8002": "20",
 	})
 
 	if err != nil {

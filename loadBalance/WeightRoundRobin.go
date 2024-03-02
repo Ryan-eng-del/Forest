@@ -20,11 +20,9 @@ type WeightRoundRobinBalance struct {
 }
 
 type WeightParameters struct {
-	addr string
-	weight int
+	Addr string
+	Weight int
 }
-
-
 
 func (r *WeightRoundRobinBalance) Callback(addr string, flag bool) {
 	for _, node := range r.ServeNodes {
@@ -87,7 +85,6 @@ func (cs *WeightRoundRobinBalance) Update() {
 		}
 	}
 }
-
 
 func (cs *WeightRoundRobinBalance) SetConf(conf LoadBalanceConf) {
 	cs.conf = conf

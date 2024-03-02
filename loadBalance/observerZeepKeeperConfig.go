@@ -94,11 +94,11 @@ func NewLoadBalanceZkConf(format, path string, zkHosts []string, conf map[string
 }
 
 
-func main() {
+// example observer | zkconf
+func Example() {
 	conf, err := NewLoadBalanceZkConf("%s", zookeeper.NodeName, []string{"localhost:2181", "localhost:2182", "localhost:2183"}, map[string]string{
-		"localhost:8081": "10",
-		"localhost:8082": "1",
-		"localhost:8000": "2",
+		"localhost:8002": "10",
+		"localhost:8001": "20",
 	})
 
 	if err != nil {

@@ -71,7 +71,7 @@ var DefaultTransport http.RoundTripper = &http.Transport{
 	ExpectContinueTimeout: 1 * time.Second,
 }
 
-
+// 负载均衡代理
 func NewLoadBalanceReverseProxy(ctx context.Context, loadBalance loadbalance.LoadBalance) *httputil.ReverseProxy{
 	director := func(req *http.Request) {
 		// if l, err := loadBalance.(*loadbalance.RoundRobinBalance); err != nil {
