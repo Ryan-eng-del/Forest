@@ -1,1 +1,0 @@
-map[:authority:[127.0.0.1:8001] content-type:[application/grpc] timestamp:[Mar  2 09:06:35.459216000] user-agent:[grpc-go/1.62.0]]
