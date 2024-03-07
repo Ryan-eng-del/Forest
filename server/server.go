@@ -39,7 +39,6 @@ func HTTPServerStop() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
 	defer cancel()
 	if err := HttpServerHandler.Shutdown(ctx); err != nil {
-		log.Println("-------------- error --------------")
 		log.Printf("[ERROR] HTTPServerStop failed: %v\n", err)
 	}
 
