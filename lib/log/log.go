@@ -48,7 +48,7 @@ type Record struct {
 }
 
 func (r *Record) String() string{
-	return fmt.Sprintf("[%s][%s][%s] %s\n", LEVEL_FLAGS[r.level], r.time, r.code, r.info)
+	return fmt.Sprintf("[%5s][%s][%s] %s\n", LEVEL_FLAGS[r.level], r.time, r.code, r.info)
 }
 
 type Logger struct {

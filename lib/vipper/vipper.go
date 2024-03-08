@@ -65,3 +65,31 @@ func (v *ViperLib) InitConfig () error {
 	}
 	return nil
 } 
+
+
+
+func (v *ViperLib) GetStringConf (key string) string {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return ""
+	}
+	viper, ok := v.ConfMap[keys[0]]
+
+	if !ok {
+		return ""
+	}
+	return viper.GetString(strings.Join(keys[1:], "."))
+}
+
+func (v *ViperLib) GetIntConf (key string) int {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return 0
+	}
+	viper, ok := v.ConfMap[keys[0]]
+
+	if !ok {
+		return 0
+	}
+	return viper.GetInt(strings.Join(keys[1:], "."))
+}

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	lib "go-gateway/lib/vipper"
 	"log"
 	"net/http"
 	"time"
@@ -14,22 +15,23 @@ var (
 )
 
 func HttpServerRun() {
-	gin.SetMode("debug")
+	gin.SetMode(lib.ViperInstance.GetStringConf("base.base.debug_mode"))
+	
 	router := InitRouter()
 
 	HttpServerHandler = &http.Server{
-		Addr: "127.0.0.1:8087",
+		Addr: lib.ViperInstance.GetStringConf("base.http.addr"),
 		Handler: router,
-		ReadTimeout: 3 * time.Second,
-		WriteTimeout: 3 * time.Second,
-		MaxHeaderBytes: 1 << uint(20),
+		ReadTimeout: time.Duration(lib.ViperInstance.GetIntConf("base.http.read_timeout")) * time.Second,
+		WriteTimeout: time.Duration(lib.ViperInstance.GetIntConf("base.http.write_timeout")) * time.Second,
+		MaxHeaderBytes: 1 << uint(lib.ViperInstance.GetIntConf("base.http.max_header_bytes")),
 	}
 
 	go func(){
-		log.Printf("[INFO] HttpServerRun:%s\n", "http://localhost:8081")
+		log.Printf("[INFO] HttpServerRun:%s\n", lib.ViperInstance.GetStringConf("base.http.addr"))
 
 		if err := HttpServerHandler.ListenAndServe(); err != nil {
-			log.Printf("[ERROR] HttpServerRun:%s err:%v\n", "http://localhost:8081", err)
+			log.Printf("[ERROR] HttpServerRun:%s err:%v\n", lib.ViperInstance.GetStringConf("base.http.addr"), err)
 		}
 	}()
 }
