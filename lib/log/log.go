@@ -4,6 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"path"
+	"runtime"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -48,7 +51,7 @@ type Record struct {
 }
 
 func (r *Record) String() string{
-	return fmt.Sprintf("[%5s][%s][%s] %s\n", LEVEL_FLAGS[r.level], r.time, r.code, r.info)
+	return fmt.Sprintf("[%-5s][%s][%s] %s\n", LEVEL_FLAGS[r.level], r.time, r.code, r.info)
 }
 
 type Logger struct {
@@ -67,9 +70,8 @@ func (l *Logger) SetInstanceImpl(lc LogConfig) (err error) {
 		if len(lc.FW.LogPath) > 0 {
 			w := NewFileWriter()
 			w.SetFileName(lc.FW.LogPath)
-			w.SetPathPattern(lc.FW.RotateWfLogPath)
+			w.SetPathPattern(lc.FW.RotateLogPath)
 			w.SetLogLevelFloor(TRACE)
-
 			// 设置日志级别层级，分文件打印
 			// WfLogPath 有，warn 和 error 打印在 WfLogPath, 其余级别打印在 LogPath
 			// WfLogPath 没有，都打印在 LogPath
@@ -78,7 +80,6 @@ func (l *Logger) SetInstanceImpl(lc LogConfig) (err error) {
 			} else {
 				w.SetLogLevelCeil(ERROR)
 			}
-
 			l.RegisterWriter(w)
 		}
 
@@ -126,6 +127,65 @@ func (l *Logger) SetInstanceImpl(lc LogConfig) (err error) {
 	return
 }
 
+
+
+func (l *Logger) SendRecordToWriter(level int, format string, args ...interface{}) {
+	var inf, code string
+
+	if level < l.level {
+		return
+	}
+
+	if format != "" {
+		inf = fmt.Sprintf(format, args...)
+	} else {
+		inf = fmt.Sprint(args...)
+	}
+
+	_, file, line, ok := runtime.Caller(2)
+
+	if ok {
+		code = path.Base(file) + ":" + strconv.Itoa(line)
+	}
+
+	now := time.Now()
+
+	if now.Unix() != l.lastTime {
+		l.lastTime = now.Unix()
+		l.lastTimeStr = now.Format(l.layout)
+	}
+	r := l.recordPool.Get().(*Record)
+	r.info = inf
+	r.code = code
+	r.time = l.lastTimeStr
+	r.level = level
+	l.tunnel <- r
+}
+
+
+func (l *Logger) Trace(fmt string, args ...interface{}) {
+	l.SendRecordToWriter(TRACE, fmt, args...)
+}
+
+func (l *Logger) Debug(fmt string, args ...interface{}) {
+	l.SendRecordToWriter(DEBUG, fmt, args...)
+}
+
+func (l *Logger) Warn(fmt string, args ...interface{}) {
+	l.SendRecordToWriter(WARNING, fmt, args...)
+}
+
+func (l *Logger) Info(fmt string, args ...interface{}) {
+	l.SendRecordToWriter(INFO, fmt, args...)
+}
+
+func (l *Logger) Error(fmt string, args ...interface{}) {
+	l.SendRecordToWriter(ERROR, fmt, args...)
+}
+
+func (l *Logger) Fatal(fmt string, args ...interface{}) {
+	l.SendRecordToWriter(FATAL, fmt, args...)
+}
 
 func (l *Logger) RegisterWriter(w Writer) {
 	if err := w.Init(); err != nil {
@@ -194,6 +254,21 @@ func (l *Logger) Bootstrap()  {
 				}
 			}
 			rotateTimer.Reset(time.Second * 10)
+		}
+	}
+}
+
+
+
+func (l *Logger)  Close() {
+	close(l.tunnel)
+	<-l.c
+
+	for _, w := range l.writers {
+		if f, ok := w.(Flusher); ok {
+			if err := f.Flush(); err != nil {
+				log.Println(err)
+			}
 		}
 	}
 }

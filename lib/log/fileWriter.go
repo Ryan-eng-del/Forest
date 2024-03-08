@@ -3,6 +3,7 @@ package lib
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	lib "go-gateway/lib/func"
 	"os"
 	"path"
@@ -26,8 +27,10 @@ type FileWriter struct {
 	filename      string
 	pathFmt       string
 	file          *os.File
+	// buffer -> output
 	fileBufWriter *bufio.Writer
 	actions       []func(*time.Time) int
+	// 日志生成时间 [2024, 3, 8, 18, 39] 用来做日志滚动更新，每 hour 生成一个新的日记文件
 	variables     []interface{}
 }
 
@@ -54,6 +57,52 @@ func (fw *FileWriter) CreateLogFile() error {
 }
 
 func (fw *FileWriter) Init() error {
+	return fw.CreateLogFile()
+}
+
+func (fw *FileWriter) Flush() error {
+	if fw.fileBufWriter != nil {
+		return fw.fileBufWriter.Flush()
+	}
+	return nil
+}
+
+func (fw *FileWriter) Rotate() error {
+	now := time.Now()
+	v := 0
+	rotate := true
+	old_variables := make([]interface{}, len(fw.variables))
+	copy(old_variables, fw.variables)
+
+	for i, act := range fw.actions {
+		v = act(&now)
+		if v != fw.variables[i] {
+			fw.variables[i] = v
+			rotate = true
+		}
+	}
+
+	if !rotate {
+		return nil
+	}
+
+	if fw.fileBufWriter != nil {
+		if err := fw.fileBufWriter.Flush(); err != nil {
+			return err
+		}
+	}
+
+	if fw.file != nil {
+		filePath := fmt.Sprintf(fw.pathFmt, old_variables...)
+
+		if err := os.Rename(fw.filename, filePath); err != nil {
+			return nil
+		}
+
+		if err := fw.file.Close(); err != nil {
+			return err
+		}
+	}
 	return fw.CreateLogFile()
 }
 
