@@ -4,16 +4,19 @@ import (
 	"bytes"
 	"fmt"
 	libConf "go-gateway/lib/conf"
+	log "go-gateway/lib/log"
 	"io"
 	"os"
 
 	"github.com/spf13/viper"
 )
 
+
 type BaseLib struct {
 	ConfPath string
 }
 
+var BaseLibInstance *BaseLib
 
 func (bL *BaseLib) ParseConfig() error {
 	libConf.BaseConfInstance = &libConf.BaseConf{}
@@ -59,5 +62,31 @@ func (bL *BaseLib) InitConf () error {
 			libConf.BaseConfInstance.TimeLocation = libConf.BaseConfInstance.Base.TimeLocation
 		}
 	}
+
+	logConf := log.LogConfig{
+		Level: libConf.BaseConfInstance.Log.LogLevel,
+		FW: log.ConfFileWriter{
+			On:              libConf.BaseConfInstance.Log.FW.On,
+			LogPath:         libConf.BaseConfInstance.Log.FW.LogPath,
+			RotateLogPath:   libConf.BaseConfInstance.Log.FW.RotateLogPath,
+			WfLogPath:       libConf.BaseConfInstance.Log.FW.WfLogPath,
+			RotateWfLogPath: libConf.BaseConfInstance.Log.FW.RotateWfLogPath,
+		},
+		CW: log.ConfConsoleWriter{
+			On:    libConf.BaseConfInstance.Log.CW.On,
+			Color: libConf.BaseConfInstance.Log.CW.Color,
+		},
+	}
+
+
+	if err := log.SetupLog(logConf); err != nil {
+		panic(err)
+	}
+
+	log.SetLayout("2006-01-02T15:04:05.000")
 	return nil
+}
+
+func (bL *BaseLib) SetPath(fileName string, ConfEnvPath string)  {
+	 bL.ConfPath = ConfEnvPath + "/" + fileName + ".toml"
 }

@@ -15,7 +15,6 @@ var (
 
 func HttpServerRun() {
 	gin.SetMode("debug")
-
 	router := InitRouter()
 
 	HttpServerHandler = &http.Server{

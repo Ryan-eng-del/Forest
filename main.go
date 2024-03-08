@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	server.InitModule("./conf/dev/")
 	server.HttpServerRun()
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)

@@ -1,19 +1,25 @@
 package server
 
 import (
-	"go-gateway/lib"
+	"fmt"
+	baseLib "go-gateway/lib/base"
+	confLib "go-gateway/lib/conf"
+	lib "go-gateway/lib/func"
 	viperLib "go-gateway/lib/vipper"
 	"log"
 	"net"
 	"os"
+	"time"
 )
 
 var (
 	LocalIP net.IP
 )
 
-var (
-	ViperLib *viperLib.ViperLib
+
+const (
+	BaseConfName = "base"
+	TimeFormat = "2006-01-02 15:04:05"
 )
 
 
@@ -39,26 +45,40 @@ func initModule(configPath string, modules []string) error {
 	}
 
 	// viper 读取配置
-	if ViperLib != nil {
-		ViperLib = &viperLib.ViperLib{}
-		ViperLib.ParseConfPath(configPath)
+	if viperLib.ViperInstance == nil {
+		viperLib.ViperInstance = &viperLib.ViperLib{}
+		viperLib.ViperInstance.ParseConfPath(configPath)
 	}
 
-	if ViperLib.ConfEnvPath == "" || ViperLib.ConfEnv == "" {
-		log.Printf("[ERROR] ParseConfPath failed:%s\n", "confEnvPath and confEnv are required")
+	if viperLib.ViperInstance.ConfEnvPath == "" || viperLib.ViperInstance.ConfEnv == "" {
+		return fmt.Errorf("[ERROR] ParseConfPath failed:%s", "confEnvPath and confEnv are required")
 	}
 
-	err := ViperLib.InitConfig()
+	err := viperLib.ViperInstance.InitConfig()
 
 	if err != nil {
-		log.Printf("[ERROR] ParseConfPath failed:%s\n", err)
+		return err
 	}
 
-
-	if lib.IsInArrayString("base", modules) {
-		
+	// 读取配置，初始化 base 模块 (log)
+	if lib.IsInArrayString(BaseConfName, modules) {
+		baseLib.BaseLibInstance = &baseLib.BaseLib{}
+		baseLib.BaseLibInstance.SetPath(BaseConfName, viperLib.ViperInstance.ConfEnvPath)
+		if err := baseLib.BaseLibInstance.InitConf(); err != nil {
+			fmt.Printf("[ERROR] %s%s\n", time.Now().Format(TimeFormat), " InitBaseConf:"+err.Error())
+		}
 	}
+
+	// 读取配置初始化数据库模块 (mysql + gorm)
+
+
+	// 读取配置初始化缓存模块 (redis)
+
+	if location, err := time.LoadLocation(confLib.BaseConfInstance.TimeLocation); err != nil {
+		confLib.TimeLocation = location
+	}
+
+	log.Printf("[INFO] %s\n", " success loading resources.")
+	log.Println("-----------------------------")
 	return nil
-
-
 }

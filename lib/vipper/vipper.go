@@ -9,6 +9,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	ViperInstance *ViperLib
+)
+
 type ViperLib struct {
 	ConfEnvPath string
 	ConfEnv string

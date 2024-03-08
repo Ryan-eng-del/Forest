@@ -1,10 +1,6 @@
 package lib
 
-import (
-	"net"
-)
-
-
+import "net"
 func GetLocalIPs() (ips []net.IP) {
 	interfaceAddr, err := net.InterfaceAddrs()
 	if err != nil {
@@ -20,15 +16,3 @@ func GetLocalIPs() (ips []net.IP) {
 	}
 	return ips
 }
-
-
-func IsInArrayString(s string, arr []string) bool {
-	for _, v := range arr {
-		if v == s {
-			return true
-		}
-	}
-
-	return false
-}
-

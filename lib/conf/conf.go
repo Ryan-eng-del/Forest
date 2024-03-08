@@ -1,5 +1,8 @@
 package lib
 
+import "time"
+
+var TimeLocation *time.Location
 var BaseConfInstance = &BaseConf{}
 
 type LogConfFileWriter struct {
