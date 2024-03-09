@@ -49,7 +49,7 @@ type TraceContext struct {
 
 type DLLogger struct {}
 
-func (l *Logger) TagInfo(trace *TraceContext, dltag string, m map[string]interface{}) {
+func (l *DLLogger) TagInfo(trace *TraceContext, dltag string, m map[string]interface{}) {
 	m[_traceId] = trace.TraceId
 	m[_childSpanId] = trace.CSpanId
 	m[_spanId] = trace.SpanId
@@ -58,7 +58,7 @@ func (l *Logger) TagInfo(trace *TraceContext, dltag string, m map[string]interfa
 }
 
 
-func (l *Logger) TagWarn(trace *TraceContext, dltag string, m map[string]interface{}) {
+func (l *DLLogger) TagWarn(trace *TraceContext, dltag string, m map[string]interface{}) {
 	m[_dlTag] = checkDLTag(dltag)
 	m[_traceId] = trace.TraceId
 	m[_childSpanId] = trace.CSpanId
@@ -67,7 +67,7 @@ func (l *Logger) TagWarn(trace *TraceContext, dltag string, m map[string]interfa
 	loggerDefault.Warn(parseParams(m))
 }
 
-func (l *Logger) TagError(trace *TraceContext, dltag string, m map[string]interface{}) {
+func (l *DLLogger) TagError(trace *TraceContext, dltag string, m map[string]interface{}) {
 	m[_dlTag] = checkDLTag(dltag)
 	m[_traceId] = trace.TraceId
 	m[_childSpanId] = trace.CSpanId
@@ -76,7 +76,7 @@ func (l *Logger) TagError(trace *TraceContext, dltag string, m map[string]interf
 	loggerDefault.Error(parseParams(m))
 }
 
-func (l *Logger) TagTrace(trace *TraceContext, dltag string, m map[string]interface{}) {
+func (l *DLLogger) TagTrace(trace *TraceContext, dltag string, m map[string]interface{}) {
 	m[_dlTag] = checkDLTag(dltag)
 	m[_traceId] = trace.TraceId
 	m[_childSpanId] = trace.CSpanId
@@ -85,7 +85,7 @@ func (l *Logger) TagTrace(trace *TraceContext, dltag string, m map[string]interf
 	loggerDefault.Trace(parseParams(m))
 }
 
-func (l *Logger) TagDebug(trace *TraceContext, dltag string, m map[string]interface{}) {
+func (l *DLLogger) TagDebug(trace *TraceContext, dltag string, m map[string]interface{}) {
 	m[_dlTag] = checkDLTag(dltag)
 	m[_traceId] = trace.TraceId
 	m[_childSpanId] = trace.CSpanId
