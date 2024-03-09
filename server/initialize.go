@@ -6,6 +6,7 @@ import (
 	confLib "go-gateway/lib/conf"
 	lib "go-gateway/lib/func"
 	mysqlLib "go-gateway/lib/mysql"
+	redisLib "go-gateway/lib/redis"
 	viperLib "go-gateway/lib/vipper"
 	"log"
 	"os"
@@ -76,13 +77,13 @@ func initModule(configPath string, modules []string) error {
 	}
 
 	// 读取配置初始化缓存模块 (redis)
-	// if lib.IsInArrayString(RedisConfName, modules) {
-	// 	redisLib.RedisLibInstance = &redisLib.RedisLib{}
-	// 	redisLib.RedisLibInstance.SetPath(BaseConfName, viperLib.ViperInstance.ConfEnvPath)
-	// 	if err := redisLib.RedisLibInstance.InitConf(); err != nil {
-	// 		fmt.Printf("[ERROR] %s%s\n", time.Now().Format(confLib.TimeFormat), " InitRedisConf:"+err.Error())
-	// 	}
-	// }
+	if lib.IsInArrayString(RedisConfName, modules) {
+		redisLib.RedisLibInstance = &redisLib.RedisLib{}
+		redisLib.RedisLibInstance.SetPath(RedisConfName, viperLib.ViperInstance.ConfEnvPath)
+		if err := redisLib.RedisLibInstance.InitConf(); err != nil {
+			return fmt.Errorf("[ERROR] %s%s", time.Now().Format(confLib.TimeFormat), " InitRedisConf:"+err.Error())
+		}
+	}
 
 	if location, err := time.LoadLocation(confLib.BaseConfInstance.TimeLocation); err != nil {
 		confLib.TimeLocation = location

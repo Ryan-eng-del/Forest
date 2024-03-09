@@ -19,8 +19,8 @@ type MysqlLib struct {
 }
 
 var MysqlLibInstance *MysqlLib
-var GORMMapPool map[string]*gorm.DB
-var DBMapPool map[string]*sql.DB
+var GORMMapPool map[string]*gorm.DB = make(map[string]*gorm.DB)
+var DBMapPool map[string]*sql.DB = make(map[string]*sql.DB)
 var GORMPoll *gorm.DB
 var DBPool *sql.DB
 
@@ -78,6 +78,7 @@ func (mL *MysqlLib) InitConf () (error) {
 		if err != nil {
 			return err
 		}
+
 
 		GORMMapPool[confName] = db
 		DBMapPool[confName] = rawDB

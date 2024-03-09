@@ -19,7 +19,7 @@ var (
 var TimeLocation *time.Location
 var BaseConfInstance = &BaseConf{}
 var MysqlConfInstance = &MysqlMapConf{}
-var RedisConfInstance = &RedisConf{}
+var RedisConfInstance = &RedisMapConf{}
 
 
 
@@ -71,10 +71,11 @@ type RedisMapConf struct {
 }
 
 type RedisConf struct {
+	DataSourceName  string `mapstructure:"data_source_name"`
 	ProxyList    []string `mapstructure:"proxy_list"`
-	Password     string   `mapstructure:"password"`
-	Db           int      `mapstructure:"db"`
 	ConnTimeout  int      `mapstructure:"conn_timeout"`
 	ReadTimeout  int      `mapstructure:"read_timeout"`
 	WriteTimeout int      `mapstructure:"write_timeout"`
+	MaxActive int `mapstructure:"max_active"`
+	MaxIdle int `mapstructure:"max_idle"`
 }
