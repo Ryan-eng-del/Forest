@@ -2,6 +2,7 @@ package lib
 
 import (
 	"context"
+	"errors"
 	libConf "go-gateway/lib/conf"
 	"time"
 
@@ -71,4 +72,13 @@ func CloseRedis() error {
 
 	RedisMapPoll = make(map[string]*redis.Client)
 	return nil
+}
+
+
+func GetRedisPoll (pollName string) (*redis.Client, error) {
+	if poll, ok := RedisMapPoll[pollName]; ok {
+		return poll, nil
+	} else {
+		return nil, errors.New("not found in RedisMapPoll")
+	}
 }

@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	lib "go-gateway/lib/vipper"
+	lib "go-gateway/lib/viper"
 	"log"
 	"net/http"
 	"time"

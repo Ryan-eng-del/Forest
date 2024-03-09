@@ -27,6 +27,15 @@ func (v *ViperLib) ParseConfPath(config string)  {
 	v.ConfEnv = path[len(path) - 2]
 }
 
+func  (v *ViperLib) GetEnv() string {
+	return ViperInstance.ConfEnv
+}
+
+func  (v *ViperLib) GetEnvPath() string {
+	return ViperInstance.ConfEnvPath
+}
+
+
 func (v *ViperLib) LogErr (pos string, err error) {
 	log.Printf("[ERROR] %s failed: %v",pos, err)
 }

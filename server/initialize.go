@@ -8,7 +8,7 @@ import (
 	logLib "go-gateway/lib/log"
 	mysqlLib "go-gateway/lib/mysql"
 	redisLib "go-gateway/lib/redis"
-	viperLib "go-gateway/lib/vipper"
+	viperLib "go-gateway/lib/viper"
 	"log"
 	"os"
 	"time"

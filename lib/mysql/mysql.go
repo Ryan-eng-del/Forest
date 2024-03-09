@@ -109,7 +109,7 @@ func DBPoolLogQuery (trace *libLog.TraceContext, sqlDb *sql.DB, query string, ar
 	endExecTime := time.Now()
 
 	if err != nil {
-		libLog.Log.TagError(trace, "_com_mysql_success", map[string]interface{}{
+		libLog.Log.TagError(trace, "_com_mysql_failure", map[string]interface{}{
 			"sql":       query,
 			"bind":      args,
 			"proc_time": fmt.Sprintf("%f", endExecTime.Sub(startExecTime).Seconds()),

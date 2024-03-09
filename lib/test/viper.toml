@@ -1,0 +1,11 @@
+age = 35
+beard = true
+eyes = 'brown'
+hacker = true
+hobbies = ['skateboarding', 'snowboarding', 'go']
+name = 'steve'
+user_name = 'jobs'
+
+[clothing]
+jacket = 'leather'
+trousers = 'denim'

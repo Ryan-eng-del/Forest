@@ -62,6 +62,7 @@ type TraceContext struct {
 type DLLogger struct {}
 
 func (l *DLLogger) TagInfo(trace *TraceContext, dltag string, m map[string]interface{}) {
+	m[_dlTag] = checkDLTag(dltag)
 	m[_traceId] = trace.TraceId
 	m[_childSpanId] = trace.CSpanId
 	m[_spanId] = trace.SpanId
@@ -99,6 +100,7 @@ func (l *DLLogger) TagTrace(trace *TraceContext, dltag string, m map[string]inte
 
 func (l *DLLogger) TagDebug(trace *TraceContext, dltag string, m map[string]interface{}) {
 	m[_dlTag] = checkDLTag(dltag)
+
 	m[_traceId] = trace.TraceId
 	m[_childSpanId] = trace.CSpanId
 	m[_spanId] = trace.SpanId

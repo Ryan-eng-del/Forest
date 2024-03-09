@@ -53,6 +53,8 @@ func (mgl *MysqlGormLogger) Error(ctx context.Context, message string, values ..
 	logLib.Log.TagInfo(trace, "_com_mysql_Error", params)
 }
 
+
+// .Debug() 时调用
 func (mgl *MysqlGormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
 	trace := logLib.GetTraceContext(ctx)
 
