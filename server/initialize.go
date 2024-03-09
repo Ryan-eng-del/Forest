@@ -5,6 +5,7 @@ import (
 	baseLib "go-gateway/lib/base"
 	confLib "go-gateway/lib/conf"
 	lib "go-gateway/lib/func"
+	mysqlLib "go-gateway/lib/mysql"
 	viperLib "go-gateway/lib/vipper"
 	"log"
 	"net"
@@ -19,7 +20,9 @@ var (
 
 const (
 	BaseConfName = "base"
-	TimeFormat = "2006-01-02 15:04:05"
+	MysqlConfName = "mysql"
+	RedisConfName = "redis"
+
 )
 
 
@@ -65,14 +68,27 @@ func initModule(configPath string, modules []string) error {
 		baseLib.BaseLibInstance = &baseLib.BaseLib{}
 		baseLib.BaseLibInstance.SetPath(BaseConfName, viperLib.ViperInstance.ConfEnvPath)
 		if err := baseLib.BaseLibInstance.InitConf(); err != nil {
-			fmt.Printf("[ERROR] %s%s\n", time.Now().Format(TimeFormat), " InitBaseConf:"+err.Error())
+			return fmt.Errorf("[ERROR] %s%s", time.Now().Format(confLib.TimeFormat), " InitBaseConf:"+err.Error())
 		}
 	}
 
 	// 读取配置初始化数据库模块 (mysql + gorm)
-
+	if lib.IsInArrayString(MysqlConfName, modules) {
+		mysqlLib.MysqlLibInstance = &mysqlLib.MysqlLib{}
+		mysqlLib.MysqlLibInstance.SetPath(MysqlConfName, viperLib.ViperInstance.ConfEnvPath)
+		if err := mysqlLib.MysqlLibInstance.InitConf(); err != nil {
+			return fmt.Errorf("[ERROR] %s%s", time.Now().Format(confLib.TimeFormat), " InitMysqlConf:"+err.Error())
+		}
+	}
 
 	// 读取配置初始化缓存模块 (redis)
+	// if lib.IsInArrayString(RedisConfName, modules) {
+	// 	redisLib.RedisLibInstance = &redisLib.RedisLib{}
+	// 	redisLib.RedisLibInstance.SetPath(BaseConfName, viperLib.ViperInstance.ConfEnvPath)
+	// 	if err := redisLib.RedisLibInstance.InitConf(); err != nil {
+	// 		fmt.Printf("[ERROR] %s%s\n", time.Now().Format(confLib.TimeFormat), " InitRedisConf:"+err.Error())
+	// 	}
+	// }
 
 	if location, err := time.LoadLocation(confLib.BaseConfInstance.TimeLocation); err != nil {
 		confLib.TimeLocation = location

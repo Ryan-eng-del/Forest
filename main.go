@@ -8,7 +8,12 @@ import (
 )
 
 func main() {
-	server.InitModule("./conf/dev/")
+	err := server.InitModule("./conf/dev/")
+
+	if err != nil {
+		panic(err)
+	}
+	
 	server.HttpServerRun()
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)

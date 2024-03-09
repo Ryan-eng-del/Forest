@@ -70,7 +70,7 @@ func (fw *FileWriter) Flush() error {
 func (fw *FileWriter) Rotate() error {
 	now := time.Now()
 	v := 0
-	rotate := true
+	rotate := false
 	old_variables := make([]interface{}, len(fw.variables))
 	copy(old_variables, fw.variables)
 

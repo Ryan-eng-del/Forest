@@ -1,6 +1,0 @@
-[INFO ][2024/03/08 19:05:45][log_test.go:25] test message
-[DEBUG][2024/03/08 19:05:45][log_test.go:27] test message
-[TRACE][2024/03/08 19:05:45][log_test.go:28] test message
-[INFO ][2024/03/08 19:06:10][log_test.go:25] test message
-[DEBUG][2024/03/08 19:06:10][log_test.go:27] test message
-[TRACE][2024/03/08 19:06:10][log_test.go:28] test message

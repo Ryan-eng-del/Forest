@@ -1,14 +1,9 @@
 package lib
 
 import (
-	"bytes"
-	"fmt"
 	libConf "go-gateway/lib/conf"
+	libFunc "go-gateway/lib/func"
 	log "go-gateway/lib/log"
-	"io"
-	"os"
-
-	"github.com/spf13/viper"
 )
 
 
@@ -19,25 +14,7 @@ type BaseLib struct {
 var BaseLibInstance *BaseLib
 
 func (bL *BaseLib) ParseConfig() error {
-	libConf.BaseConfInstance = &libConf.BaseConf{}
-	file, err := os.Open(bL.ConfPath)
-	if err != nil {
-		return fmt.Errorf("open config %v fail, %v", bL.ConfPath, err)
-	}
-
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return fmt.Errorf("read config fail, %v", err)
-	}
-
-	v := viper.New()
-	v.SetConfigType("toml")
-	v.ReadConfig(bytes.NewBuffer(data))
-	
-	if err := v.Unmarshal(libConf.BaseConfInstance); err != nil {
-		return fmt.Errorf("parse config fail, config:%v, err:%v", string(data), err)
-	}
-	return nil
+	return libFunc.ParseConfigFromFile(bL.ConfPath, libConf.BaseConfInstance)
 }
 
 
@@ -78,9 +55,8 @@ func (bL *BaseLib) InitConf () error {
 		},
 	}
 
-
 	if err := log.SetupLog(logConf); err != nil {
-		panic(err)
+		return err
 	}
 
 	log.SetLayout("2006-01-02T15:04:05.000")
