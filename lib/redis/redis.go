@@ -3,8 +3,9 @@ package lib
 import (
 	"context"
 	libConf "go-gateway/lib/conf"
-	libFunc "go-gateway/lib/func"
 	"time"
+
+	libFunc "go-gateway/lib/func"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -61,4 +62,13 @@ func (rL *RedisLib) InitConf () error {
 
 func (rL *RedisLib) SetPath(fileName string, ConfEnvPath string)  {
 	rL.ConfPath = ConfEnvPath + "/" + fileName + ".toml"
+}
+
+func CloseRedis() error {
+	for _, dbpool := range RedisMapPoll {
+		dbpool.Close()
+	}
+
+	RedisMapPoll = make(map[string]*redis.Client)
+	return nil
 }

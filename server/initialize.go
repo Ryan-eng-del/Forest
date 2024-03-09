@@ -5,6 +5,7 @@ import (
 	baseLib "go-gateway/lib/base"
 	confLib "go-gateway/lib/conf"
 	lib "go-gateway/lib/func"
+	logLib "go-gateway/lib/log"
 	mysqlLib "go-gateway/lib/mysql"
 	redisLib "go-gateway/lib/redis"
 	viperLib "go-gateway/lib/vipper"
@@ -92,4 +93,14 @@ func initModule(configPath string, modules []string) error {
 	log.Printf("[INFO] %s\n", " success loading resources.")
 	log.Println("-----------------------------")
 	return nil
+}
+
+func DestroyModule() {
+	log.Println("-----------------------------")
+	log.Printf(" [INFO] %s\n", " start destroy resources.")
+	mysqlLib.CloseDB()
+	redisLib.CloseRedis()
+	logLib.Close()
+	log.Printf(" [INFO] %s\n", " success destroy resources.")
+	log.Println("-----------------------------")
 }

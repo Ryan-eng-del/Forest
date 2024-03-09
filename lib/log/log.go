@@ -260,7 +260,7 @@ func (l *Logger) Bootstrap()  {
 
 
 
-func (l *Logger)  Close() {
+func (l *Logger) Close() {
 	close(l.tunnel)
 	<-l.c
 
@@ -305,4 +305,11 @@ func NewSingleLoggerDefault() {
 func SetLayout(layout string) {
 	NewSingleLoggerDefault()
 	loggerDefault.layout = layout
+}
+
+func Close() {
+	NewSingleLoggerDefault()
+	loggerDefault.Close()
+	loggerDefault = nil
+	setUp = false
 }

@@ -1,11 +1,16 @@
 package lib
 
 import (
+	"bytes"
 	"context"
+	"encoding/binary"
 	"errors"
 	"fmt"
+	"math/rand"
 	"strings"
+	"time"
 
+	confLib "go-gateway/lib/conf"
 	funcLib "go-gateway/lib/func"
 
 	"github.com/gin-gonic/gin"
@@ -190,4 +195,14 @@ func SetTraceContext(ctx context.Context, trace *TraceContext) context.Context {
 		return ctx
 	}
 	return context.WithValue(ctx, TraceString("trace"), trace)
+}
+
+
+func NewSpanId() string {
+	timestamp := uint32(time.Now().Unix())
+	ipToLong := binary.BigEndian.Uint32(confLib.LocalIP.To4())
+	b := bytes.Buffer{}
+	b.WriteString(fmt.Sprintf("%08x", ipToLong^timestamp))
+	b.WriteString(fmt.Sprintf("%08x", rand.Int31()))
+	return b.String()
 }
