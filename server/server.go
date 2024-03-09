@@ -34,6 +34,7 @@ func HttpServerRun() {
 			log.Printf("[ERROR] HttpServerRun:%s err:%v\n", lib.ViperInstance.GetStringConf("base.http.addr"), err)
 		}
 	}()
+
 }
 
 func HTTPServerStop() {

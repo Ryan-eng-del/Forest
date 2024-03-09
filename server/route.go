@@ -2,7 +2,6 @@ package server
 
 import (
 	demoController "go-gateway/controller/demo"
-
 	"github.com/gin-gonic/gin"
 )
 

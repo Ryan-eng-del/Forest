@@ -161,6 +161,21 @@ func NewTrace() *TraceContext {
 }
 
 
+// 从gin的Context中获取数据
+func GetGinTraceContext(c *gin.Context) *TraceContext {
+	// 防御
+	if c == nil {
+		return NewTrace()
+	}
+	traceContext, exists := c.Get("trace")
+	if exists {
+		if tc, ok := traceContext.(*TraceContext); ok {
+			return tc
+		}
+	}
+	return NewTrace()
+}
+
 func GetTraceContext(ctx context.Context) *TraceContext {
 	if ginCtx, ok := ctx.(*gin.Context); ok {
 		traceIntraceContext, exists := ginCtx.Get("trace")
@@ -207,4 +222,46 @@ func NewSpanId() string {
 	b.WriteString(fmt.Sprintf("%08x", ipToLong^timestamp))
 	b.WriteString(fmt.Sprintf("%08x", rand.Int31()))
 	return b.String()
+}
+
+//错误日志
+func ContextWarning(c context.Context, dltag string, m map[string]interface{}) {
+	v:=c.Value("trace")
+	traceContext,ok := v.(*TraceContext)
+	if !ok{
+		traceContext = NewTrace()
+	}
+	Log.TagWarn(traceContext, dltag, m)
+}
+
+//错误日志
+func ContextError(c context.Context, dltag string, m map[string]interface{}) {
+	v:=c.Value("trace")
+	traceContext,ok := v.(*TraceContext)
+	if !ok{
+		traceContext = NewTrace()
+	}
+	Log.TagError(traceContext, dltag, m)
+}
+
+//普通日志
+func ContextNotice(c context.Context, dltag string, m map[string]interface{}) {
+	v:=c.Value("trace")
+	traceContext,ok := v.(*TraceContext)
+	if !ok{
+		traceContext = NewTrace()
+	}
+	Log.TagInfo(traceContext, dltag, m)
+}
+
+//错误日志
+func ComLogWarning(c *gin.Context, dltag string, m map[string]interface{}) {
+	traceContext := GetGinTraceContext(c)
+	Log.TagError(traceContext, dltag, m)
+}
+
+//普通日志
+func ComLogNotice(c *gin.Context, dltag string, m map[string]interface{}) {
+	traceContext := GetGinTraceContext(c)
+	Log.TagInfo(traceContext, dltag, m)
 }
