@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -92,4 +93,103 @@ func (v *ViperLib) GetIntConf (key string) int {
 		return 0
 	}
 	return viper.GetInt(strings.Join(keys[1:], "."))
+}
+
+func  (v *ViperLib) GetStringMapConf(key string) map[string]interface{} {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return nil
+	}
+	viper := v.ConfMap[keys[0]]
+	conf := viper.GetStringMap(strings.Join(keys[1:], "."))
+	return conf
+}
+
+//获取get配置信息
+func  (v *ViperLib) GetConf(key string) interface{} {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return nil
+	}
+	viper := v.ConfMap[keys[0]]
+	conf := viper.Get(strings.Join(keys[1:], "."))
+	return conf
+}
+
+//获取get配置信息
+func  (v *ViperLib) GetBoolConf(key string) bool {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return false
+	}
+	viper := v.ConfMap[keys[0]]
+	conf := viper.GetBool(strings.Join(keys[1:], "."))
+	return conf
+}
+
+//获取get配置信息
+func  (v *ViperLib) GetFloat64Conf(key string) float64 {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return 0
+	}
+	viper := v.ConfMap[keys[0]]
+	conf := viper.GetFloat64(strings.Join(keys[1:], "."))
+	return conf
+}
+
+
+//获取get配置信息
+func  (v *ViperLib) GetStringMapStringConf(key string) map[string]string {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return nil
+	}
+	viper := v.ConfMap[keys[0]]
+	conf := viper.GetStringMapString(strings.Join(keys[1:], "."))
+	return conf
+}
+
+//获取get配置信息
+func  (v *ViperLib) GetStringSliceConf(key string) []string {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return nil
+	}
+	viper := v.ConfMap[keys[0]]
+	conf := viper.GetStringSlice(strings.Join(keys[1:], "."))
+	return conf
+}
+
+//获取get配置信息
+func   (v *ViperLib) GetTimeConf(key string) time.Time {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return time.Now()
+	}
+	viper := v.ConfMap[keys[0]]
+	conf := viper.GetTime(strings.Join(keys[1:], "."))
+	return conf
+}
+
+//获取时间阶段长度
+func  (v *ViperLib) GetDurationConf(key string) time.Duration {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return 0
+	}
+	viper := v.ConfMap[keys[0]]
+	conf := viper.GetDuration(strings.Join(keys[1:], "."))
+	return conf
+}
+
+//是否设置了key
+func  (v *ViperLib) IsSetConf(key string) bool {
+	keys := strings.Split(key, ".")
+	if len(keys) < 2 {
+		return false
+	}
+	viper := v.ConfMap[keys[0]]
+	conf := viper.IsSet(strings.Join(keys[1:], "."))
+	return conf
 }
