@@ -8,13 +8,8 @@ import (
 	mysqlLib "go-gateway/lib/mysql"
 	viperLib "go-gateway/lib/vipper"
 	"log"
-	"net"
 	"os"
 	"time"
-)
-
-var (
-	LocalIP net.IP
 )
 
 
@@ -22,7 +17,6 @@ const (
 	BaseConfName = "base"
 	MysqlConfName = "mysql"
 	RedisConfName = "redis"
-
 )
 
 
@@ -44,7 +38,7 @@ func initModule(configPath string, modules []string) error {
 	ips := lib.GetLocalIPs()
 
 	if len(ips) > 0 {
-		LocalIP = ips[0]
+		confLib.LocalIP = ips[0]
 	}
 
 	// viper 读取配置

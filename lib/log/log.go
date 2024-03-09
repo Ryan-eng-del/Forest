@@ -274,7 +274,7 @@ func (l *Logger)  Close() {
 }
  
 func NewLogger() *Logger {
-	if loggerDefault != nil && setUp == false {
+	if loggerDefault != nil && !setUp {
 		setUp = true
 		return loggerDefault
 	}

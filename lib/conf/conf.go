@@ -3,11 +3,16 @@ package lib
 // 此包下，存放配置解析结构体，全局配置示例
 
 import (
+	"net"
 	"time"
 )
 
 
 const TimeFormat = "2006-01-02 15:04:05"
+var (
+	LocalIP net.IP
+)
+
 
 // 全局变量
 var TimeLocation *time.Location
