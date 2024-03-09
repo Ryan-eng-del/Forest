@@ -1,8 +1,14 @@
 package lib
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"strings"
+
+	funcLib "go-gateway/lib/func"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Trace struct {
@@ -40,12 +46,13 @@ const (
 
 
 var Log *DLLogger
-
+type TraceString string
 
 type TraceContext struct {
 	Trace
 	CSpanId string
 }
+
 
 type DLLogger struct {}
 
@@ -137,4 +144,50 @@ func parseParams(m map[string]interface{}) string {
 
 	dlTag = strings.Trim(dlTag, "\"")
 	return dlTag
+}
+
+func NewTrace() *TraceContext {
+	trace := &TraceContext{}
+	trace.TraceId = funcLib.GetTraceId()
+	trace.SpanId = funcLib.NewSpanId()
+	return trace
+}
+
+
+func GetTraceContext(ctx context.Context) *TraceContext {
+	if ginCtx, ok := ctx.(*gin.Context); ok {
+		traceIntraceContext, exists := ginCtx.Get("trace")
+		if !exists {
+			return NewTrace()
+		}
+		traceContext, ok := traceIntraceContext.(*TraceContext)
+		if ok {
+			return traceContext
+		}
+		return NewTrace()
+	}
+	traceContext, ok := ctx.Value("trace").(*TraceContext)
+	if ok {
+		return traceContext
+	}
+
+	return NewTrace()
+}
+
+
+func SetGinTraceContext(c *gin.Context, trace *TraceContext) error {
+	if trace == nil || c == nil {
+		return errors.New("context is nil")
+	}
+	c.Set("trace", trace)
+	return nil
+}
+
+
+
+func SetTraceContext(ctx context.Context, trace *TraceContext) context.Context {
+	if trace == nil {
+		return ctx
+	}
+	return context.WithValue(ctx, TraceString("trace"), trace)
 }

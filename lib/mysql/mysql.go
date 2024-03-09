@@ -53,13 +53,14 @@ func (mL *MysqlLib) InitConf () (error) {
 			return err
 		}
 
-		DBMapPool[confName] = rawDB
-
 		// orm 方式连接查询
-		db, err := gorm.Open(mysql.Open(DbConf.DataSourceName), &gorm.Config{
+		db, err := gorm.Open(mysql.New(mysql.Config{
+			 Conn:rawDB,
+		}), &gorm.Config{
 			NamingStrategy: schema.NamingStrategy{
 				SingularTable: true,
 			},
+			Logger: &DefaultGormLogger,
 		})
 
 		if err != nil {
@@ -79,6 +80,8 @@ func (mL *MysqlLib) InitConf () (error) {
 		}
 
 		GORMMapPool[confName] = db
+		DBMapPool[confName] = rawDB
+
 
 		if dbpool, err := GetDBPool("default"); err == nil {
 			DBPool = dbpool
@@ -122,11 +125,12 @@ func DBPoolLogQuery (trace *libLog.TraceContext, sqlDb *sql.DB, query string, ar
 
 
 func CloseDB() error {
-	for _, dbpool := range GORMMapPool {
-		poll, _ := dbpool.DB()
-		poll.Close()
+	for _, dbpool := range DBMapPool {
+		dbpool.Close()
 	}
 
+	DBMapPool = make(map[string]*sql.DB)
+	GORMMapPool = make(map[string]*gorm.DB)
 	return nil
 }
 
