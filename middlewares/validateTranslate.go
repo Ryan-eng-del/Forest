@@ -19,16 +19,18 @@ import (
 
 
 func TranslationMiddleware() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		en := en.New()
-		zh := zh.New()
+	en := en.New()
+	zh := zh.New()
 
-		uni := ut.New(zh, zh, en)
-		vtor := validator.New()
+	uni := ut.New(zh, zh, en)
+	vtor := validator.New()
+
+	//自定义验证方法
+	CustomRegisterValidation(vtor)
+	return func(ctx *gin.Context) {
 		locale := ctx.DefaultQuery("locale", "zh")
 		isZh := locale == "zh"
 		trans, _ := uni.GetTranslator(locale)
-
 		switch locale {
 		case "en":
 			en_translations.RegisterDefaultTranslations(vtor,trans)
@@ -42,9 +44,6 @@ func TranslationMiddleware() gin.HandlerFunc {
 			})
 		}
 
-
-		//自定义验证方法
-		CustomRegisterValidation(vtor)
 		//针对于自定义的 validator func 设置翻译器
 		CustomRegisterTranslation(vtor, trans, isZh)
 		// 设置全局 Context translator and validator
