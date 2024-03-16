@@ -9,6 +9,8 @@ import (
 
 
 const TimeFormat = "2006-01-02 15:04:05"
+const SecretKey = "Golang-Gateway-insecure-f4l_+=45qi4sru9&ep9trs_(nhombudb(^an36o%e)w#*b3pp8"
+const TokenExpirePeriod = time.Hour * 24 * 7
 
 var (
 	LocalIP net.IP

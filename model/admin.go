@@ -1,5 +1,14 @@
 package model
 
+import (
+	"errors"
+	adminDto "go-gateway/dto/admin"
+	lib "go-gateway/lib/func"
+	mysqlLib "go-gateway/lib/mysql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
 
 
 type Admin struct {
@@ -11,4 +20,30 @@ type Admin struct {
 
 func (t *Admin) TableName() string {
 	return "gateway_admin"
+}
+
+
+func (t *Admin) LoginCheck(c *gin.Context, db *gorm.DB, params adminDto.AdminLoginInput ) (*Admin, error) {
+
+	admin, err := t.Find(c, db, params.Username)
+	if err != nil {
+		return nil, errors.New("用户信息不存在")
+	}
+
+	saltPassword := lib.GenSaltPassword(admin.Salt, params.Password)
+
+	if admin.Password != saltPassword {
+		return nil, errors.New("密码输入不正确")
+	}
+	return admin, nil
+}
+
+
+func (t *Admin) Find(c *gin.Context, db *gorm.DB, search string) (*Admin, error) {
+	out := &Admin{}
+	err := db.Scopes(mysqlLib.LogicalObjects).WithContext(c).Where("user_name = ?", search).Find(&out).Error
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }

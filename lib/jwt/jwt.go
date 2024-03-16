@@ -43,7 +43,7 @@ func NewJWT() (*JWT) {
 
 
 func (j *JWT) GenerateTokenWithUserID(useId uint) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, CustomClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, CustomClaims{
 		UserId: useId,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(j.ExpirePeriod)),

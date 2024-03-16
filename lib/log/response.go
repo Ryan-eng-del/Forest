@@ -47,7 +47,7 @@ func ResponseError(c *gin.Context, code ResponseCode, err error) {
 	if c.Query("is_debug") == "1" || libViper.ViperInstance.GetEnv() == "dev" {
 		stack = strings.Replace(fmt.Sprintf("%+v", err), err.Error()+"\n", "", -1)
 	}
-
+	
 	resp := &Response{ErrorCode: code, ErrorMsg: err.Error(), Data: "", TraceId: traceId, Stack: stack}
 	c.JSON(200, resp)
 	response, _ := json.Marshal(resp)

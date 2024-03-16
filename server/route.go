@@ -1,10 +1,16 @@
 package server
 
 import (
-	demoController "go-gateway/controller/demo"
-	"github.com/gin-gonic/gin"
-)
+	adminController "go-gateway/controller/admin"
 
+	_ "go-gateway/docs"
+
+	mids "go-gateway/middlewares"
+
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+)
 
 func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	router := gin.Default()
@@ -17,13 +23,16 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		})
 	})
 
-	v1 := router.Group("v1")
-	
-	// group 中间件
-	v1.Use()
+	api := router.Group("api")
+	api.Use(mids.RequestLogMiddleware(),mids.RecoveryMiddleware(),mids.TranslationMiddleware())
 	{
-		demoController.Register(v1)	
+		adminLogin := api.Group("admin_login")
+		adminController.Register(adminLogin)
 	}
+
+
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return router
 }

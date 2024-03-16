@@ -18,6 +18,7 @@ func HttpServerRun() {
 	gin.SetMode(lib.ViperInstance.GetStringConf("base.base.debug_mode"))
 	
 	router := InitRouter()
+	
 
 	HttpServerHandler = &http.Server{
 		Addr: lib.ViperInstance.GetStringConf("base.http.addr"),
