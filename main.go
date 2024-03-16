@@ -1,19 +1,33 @@
 package main
 
 import (
-	lib "go-gateway/lib/mysql"
 	"go-gateway/server"
 	"os"
 	"os/signal"
 	"syscall"
 )
 
+// @title           Go-Gateway API
+// @version         1.0
+// @description     This is a sample server celler server.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8880
+// @BasePath  /api
+
+// @securityDefinitions.basic  BasicAuth
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	err := server.InitModule("./conf/dev/")
-
-	db, _ := lib.GetGormPool("default")
-	// db.AutoMigrate(model.Service{},model.AccessControl{}, model.App{}, model.GrpcRule{}, model.Admin{},  model.TcpRule{},  model.HttpRule{}, model.LoadBalance{})
-
 	if err != nil {
 		panic(err)
 	}

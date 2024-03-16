@@ -1,0 +1,105 @@
+basePath: /api
+definitions:
+  adminDto.AdminLoginInput:
+    properties:
+      password:
+        example: "123456"
+        type: string
+      username:
+        example: admin
+        type: string
+    required:
+    - password
+    type: object
+  commonDto.TokensOutput:
+    properties:
+      access_token:
+        description: access_token
+        type: string
+      expires_in:
+        description: expires_in
+        type: integer
+      scope:
+        description: scope
+        type: string
+      token_type:
+        description: token_type
+        type: string
+    type: object
+  middlewares.Response:
+    properties:
+      data: {}
+      errmsg:
+        type: string
+      errno:
+        $ref: '#/definitions/middlewares.ResponseCode'
+      stack: {}
+      trace_id: {}
+    type: object
+  middlewares.ResponseCode:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 401
+    - 1000
+    - 2001
+    type: integer
+    x-enum-varnames:
+    - SuccessCode
+    - UndefErrorCode
+    - ValidErrorCode
+    - InternalErrorCode
+    - InvalidRequestErrorCode
+    - CustomizeCode
+    - GROUPALL_SAVE_FLOWERROR
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8880
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Go-Gateway API
+  version: "1.0"
+paths:
+  /admin_login/login:
+    post:
+      consumes:
+      - application/json
+      description: 管理员登陆
+      operationId: /admin_login/login
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/adminDto.AdminLoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/middlewares.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/commonDto.TokensOutput'
+              type: object
+      summary: 管理员登陆
+      tags:
+      - Admin
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"
