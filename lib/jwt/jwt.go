@@ -58,9 +58,13 @@ func (j *JWT) GenerateTokenWithUserID(useId uint) (string, error) {
 }
 
 func (j *JWT) ParseJWT(tokenStr string) (*CustomClaims, error) {
-	token, _ := jwt.ParseWithClaims(tokenStr, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return j.SignKey, nil
 	})
+
+	if err != nil {
+		return nil, err
+	}
 
 	if token != nil {
 		if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {

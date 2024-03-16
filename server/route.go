@@ -2,7 +2,6 @@ package server
 
 import (
 	adminController "go-gateway/controller/admin"
-
 	_ "go-gateway/docs"
 
 	mids "go-gateway/middlewares"
@@ -25,11 +24,15 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 
 	api := router.Group("api")
 	api.Use(mids.RequestLogMiddleware(),mids.RecoveryMiddleware(),mids.TranslationMiddleware())
+
+
+
 	{
 		adminLogin := api.Group("admin_login")
+		adminInfo := api.Group("admin").Use(mids.JWTTokenAuth())
 		adminController.Register(adminLogin)
+		adminController.RegisterAuth(adminInfo)
 	}
-
 
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

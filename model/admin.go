@@ -25,7 +25,7 @@ func (t *Admin) TableName() string {
 
 func (t *Admin) LoginCheck(c *gin.Context, db *gorm.DB, params adminDto.AdminLoginInput ) (*Admin, error) {
 
-	admin, err := t.Find(c, db, params.Username)
+	admin, err := t.FindByName(c, db, params.Username)
 	if err != nil {
 		return nil, errors.New("用户信息不存在")
 	}
@@ -39,9 +39,18 @@ func (t *Admin) LoginCheck(c *gin.Context, db *gorm.DB, params adminDto.AdminLog
 }
 
 
-func (t *Admin) Find(c *gin.Context, db *gorm.DB, search string) (*Admin, error) {
+func (t *Admin) FindByName(c *gin.Context, db *gorm.DB, search string) (*Admin, error) {
 	out := &Admin{}
 	err := db.Scopes(mysqlLib.LogicalObjects).WithContext(c).Where("user_name = ?", search).Find(&out).Error
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (t *Admin) FindById(c *gin.Context, db *gorm.DB, id uint) (*Admin, error) {
+	out := &Admin{}
+	err := db.Scopes(mysqlLib.LogicalObjects).WithContext(c).First(out, id).Error
 	if err != nil {
 		return nil, err
 	}

@@ -1,5 +1,22 @@
 basePath: /api
 definitions:
+  adminDto.AdminInfoOutput:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: integer
+      introduction:
+        type: string
+      login_time:
+        type: string
+      name:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+    type: object
   adminDto.AdminLoginInput:
     properties:
       password:
@@ -7,6 +24,16 @@ definitions:
         type: string
       username:
         example: admin
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  adminDto.ChangePwdInput:
+    properties:
+      password:
+        description: 密码
+        example: "123456"
         type: string
     required:
     - password
@@ -26,17 +53,17 @@ definitions:
         description: token_type
         type: string
     type: object
-  middlewares.Response:
+  public.Response:
     properties:
       data: {}
       errmsg:
         type: string
       errno:
-        $ref: '#/definitions/middlewares.ResponseCode'
+        $ref: '#/definitions/public.ResponseCode'
       stack: {}
       trace_id: {}
     type: object
-  middlewares.ResponseCode:
+  public.ResponseCode:
     enum:
     - 0
     - 1
@@ -54,9 +81,6 @@ definitions:
     - InvalidRequestErrorCode
     - CustomizeCode
     - GROUPALL_SAVE_FLOWERROR
-externalDocs:
-  description: OpenAPI
-  url: https://swagger.io/resources/open-api/
 host: localhost:8880
 info:
   contact:
@@ -68,9 +92,62 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Go-Gateway API
+  title: Go-Gateway  API
   version: "1.0"
 paths:
+  /admin/change_pwd:
+    post:
+      consumes:
+      - application/json
+      description: 修改密码
+      operationId: /admin/change_pwd
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/adminDto.ChangePwdInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 修改密码
+      tags:
+      - Admin
+  /admin/info:
+    get:
+      consumes:
+      - application/json
+      description: 管理员信息
+      operationId: /admin/info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/adminDto.AdminInfoOutput'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 管理员信息
+      tags:
+      - Admin
   /admin_login/login:
     post:
       consumes:
@@ -91,7 +168,7 @@ paths:
           description: success
           schema:
             allOf:
-            - $ref: '#/definitions/middlewares.Response'
+            - $ref: '#/definitions/public.Response'
             - properties:
                 data:
                   $ref: '#/definitions/commonDto.TokensOutput'
@@ -100,6 +177,41 @@ paths:
       tags:
       - Admin
 securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
   BasicAuth:
     type: basic
+  OAuth2AccessCode:
+    authorizationUrl: https://example.com/oauth/authorize
+    flow: accessCode
+    scopes:
+      admin: ' Grants read and write access to administrative information'
+    tokenUrl: https://example.com/oauth/token
+    type: oauth2
+  OAuth2Application:
+    flow: application
+    scopes:
+      admin: ' Grants read and write access to administrative information'
+      write: ' Grants write access'
+    tokenUrl: https://example.com/oauth/token
+    type: oauth2
+  OAuth2Implicit:
+    authorizationUrl: https://example.com/oauth/authorize
+    flow: implicit
+    scopes:
+      admin: ' Grants read and write access to administrative information'
+      write: ' Grants write access'
+    type: oauth2
+  OAuth2Password:
+    flow: password
+    scopes:
+      admin: ' Grants read and write access to administrative information'
+      read: ' Grants read access'
+      write: ' Grants write access'
+    tokenUrl: https://example.com/oauth/token
+    type: oauth2
 swagger: "2.0"
+x-extension-openapi:
+  example: value on a json format

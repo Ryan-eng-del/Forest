@@ -5,19 +5,17 @@ import (
 	commonDto "go-gateway/dto/common"
 	_jwt "go-gateway/lib/jwt"
 	libMysql "go-gateway/lib/mysql"
-	"go-gateway/middlewares"
 	"go-gateway/model"
+	pubic "go-gateway/public"
 	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
-// gin-swagger middleware
-// swagger embed files
 
 type AdminLoginController struct {}
 
-func Register(group *gin.RouterGroup) {
+func Register(group gin.IRoutes) {
 	adminLogin := &AdminLoginController{}
 	group.POST("/login", adminLogin.Login)
 	group.GET("/logout", adminLogin.LoginOut)
@@ -32,19 +30,19 @@ func Register(group *gin.RouterGroup) {
 // @Accept  json
 // @Produce  json
 // @Param body body adminDto.AdminLoginInput true "body"
-// @Success 200 {object} middlewares.Response{data=commonDto.TokensOutput} "success"
+// @Success 200 {object} public.Response{data=commonDto.TokensOutput} "success"
 // @Router /admin_login/login [post]	
 func (adminLogin *AdminLoginController) Login (c *gin.Context) {
 	params := adminDto.AdminLoginInput{}
 
 	if err := params.BindValidParam(c); err != nil {
-		middlewares.ResponseError(c, 2000, err)
+		pubic.ResponseError(c, 2000, err)
 		return
 	}
 
 	tx, err := libMysql.GetGormPool("default")
 	if err != nil {
-		middlewares.ResponseError(c, 2001, err)
+		pubic.ResponseError(c, 2001, err)
 		return
 	}
 	
@@ -52,14 +50,14 @@ func (adminLogin *AdminLoginController) Login (c *gin.Context) {
 	admin := &model.Admin{}
 	admin, err = admin.LoginCheck(c, tx, params)
 	if err != nil {
-		middlewares.ResponseError(c, 2002, err)
+		pubic.ResponseError(c, 2002, err)
 		return
 	}
 
 	token, err := _jwt.NewJWT().GenerateTokenWithUserID(admin.ID)
 	log.Println(token, "token")
 	if err != nil {
-		middlewares.ResponseError(c, 2004, err)
+		pubic.ResponseError(c, 2004, err)
 		return
 	}
 
@@ -70,7 +68,7 @@ func (adminLogin *AdminLoginController) Login (c *gin.Context) {
 		Scope: "all",
 	}
 
-	middlewares.ResponseSuccess(c, output)
+	pubic.ResponseSuccess(c, output)
 }
 
 func (adminLogin *AdminLoginController) LoginOut (c *gin.Context) {
