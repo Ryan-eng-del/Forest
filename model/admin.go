@@ -56,3 +56,7 @@ func (t *Admin) FindById(c *gin.Context, db *gorm.DB, id uint) (*Admin, error) {
 	}
 	return out, nil
 }
+
+func (t *Admin) Save(c *gin.Context, db *gorm.DB) error {
+	return db.WithContext(c).Save(t).Error
+}

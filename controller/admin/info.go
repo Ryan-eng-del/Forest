@@ -3,12 +3,14 @@ package adminController
 import (
 	"errors"
 	adminDto "go-gateway/dto/admin"
+	lib "go-gateway/lib/func"
 	mysqlLib "go-gateway/lib/mysql"
 	"go-gateway/model"
 	public "go-gateway/public"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type AdminController struct {}
@@ -32,17 +34,8 @@ func RegisterAuth(group gin.IRoutes) {
 // @Success 200 {object} public.Response{data=adminDto.AdminInfoOutput} "success"
 // @Router /admin/info [get]
 func (a *AdminController) AdminInfo(c *gin.Context) {
-	userId, _:= c.Get("UserID")
-	adminId, ok := userId.(uint); 
-	if !ok {
-		public.ResponseError(c, 2000, errors.New("not a valid user"))
-		return
-	}
-
-	admin := &model.Admin{}
 	tx, _ := mysqlLib.GetGormPool("default")
-	admin, err := admin.FindById(c, tx, adminId)
-
+	admin, err := a.GetAdmin(c, tx)
 	if err != nil {
 		public.ResponseError(c, 2000, err)
 		return
@@ -71,5 +64,38 @@ func (a *AdminController) AdminInfo(c *gin.Context) {
 // @Success 200 {object} public.Response{data=string} "success"
 // @Router /admin/change_pwd [post]
 func (a *AdminController) AdminChangePwd(c *gin.Context) {
+	params := adminDto.ChangePwdInput{}
+	if err := params.BindValidParam(c); err != nil {
+		public.ResponseError(c, 2003, err)
+	}
+
+	tx, _ := mysqlLib.GetGormPool("default")
+	admin, err := a.GetAdmin(c, tx)
+
+	if err != nil {
+		public.ResponseError(c, 2000, err)
+		return
+	}
+
+	admin.Password = lib.GenSaltPassword(admin.Salt, params.Password)
+	if err := admin.Save(c, tx); err != nil {
+		public.ResponseError(c, 2001, err)
+		return
+	}
 	
+	public.ResponseSuccess(c, "")
+}
+
+
+func (a *AdminController) GetAdmin(c *gin.Context, tx *gorm.DB) (*model.Admin, error){
+	userId, _:= c.Get("UserID")
+	adminId, ok := userId.(uint); 
+	if !ok {
+		return nil, errors.New("not a valid user")
+	}
+
+	admin := &model.Admin{}
+	
+	admin, err := admin.FindById(c, tx, adminId)
+	return admin, err
 }
