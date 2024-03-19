@@ -63,7 +63,6 @@ func (v *ViperLib) InitConfig () error {
 			vI := viper.New()
 			vI.SetConfigType("toml")
 			vI.ReadConfig(bytes.NewBuffer(bts))
-
 			pathAddr := strings.Split(file.Name(), ".")
 
 			if v.ConfMap == nil {

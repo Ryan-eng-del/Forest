@@ -1,8 +1,15 @@
 package model
 
+import (
+	mysqlLib "go-gateway/lib/mysql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
 type LoadBalance struct {
 	ID            int64  `json:"id" gorm:"primary_key"`
-	ServiceID     int64  `json:"service_id" gorm:"column:service_id" description:"服务id	"`
+	ServiceInfoID     uint  `json:"service_id" gorm:"column:service_id" description:"服务id	"`
 	CheckMethod   int    `json:"check_method" gorm:"column:check_method;type:int;size:14" description:"检查方法 tcpchk=检测端口是否握手成功	"`
 	CheckTimeout  uint    `json:"check_timeout" gorm:"column:check_timeout;unsigned;size:15;not null;" description:"check超时时间"`
 	CheckInterval int    `json:"check_interval" gorm:"column:check_interval" description:"检查间隔, 单位s		"`
@@ -18,4 +25,9 @@ type LoadBalance struct {
 
 func (t *LoadBalance) TableName() string {
 	return "gateway_load_balance"
+}
+
+func (t *LoadBalance) Find(c *gin.Context, tx *gorm.DB) error {
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()),mysqlLib.LogicalObjects())
+	return query.Find(t).Error
 }

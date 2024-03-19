@@ -1,5 +1,12 @@
 package model
 
+import (
+	mysqlLib "go-gateway/lib/mysql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
 type HttpRule struct {
 	ID             uint  `json:"id" gorm:"primary_key"`
 	ServiceInfoID      uint  `json:"service_id" gorm:"comment:服务id"`
@@ -14,4 +21,10 @@ type HttpRule struct {
 
 func (t *HttpRule) TableName() string {
 	return "gateway_http_rule"
+}
+
+
+func (t *HttpRule) Find(c *gin.Context, tx *gorm.DB) error {
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()),mysqlLib.LogicalObjects())
+	return query.Find(t).Error
 }

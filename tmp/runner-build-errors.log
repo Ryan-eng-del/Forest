@@ -1,0 +1,6 @@
+main.go:7:2: no required module provides package github.com/golang-migrate/migrate/v4; to add it:
+	go get github.com/golang-migrate/migrate/v4
+main.go:8:2: no required module provides package github.com/golang-migrate/migrate/v4/database/postgres; to add it:
+	go get github.com/golang-migrate/migrate/v4/database/postgres
+main.go:9:2: no required module provides package github.com/golang-migrate/migrate/v4/source/github; to add it:
+	go get github.com/golang-migrate/migrate/v4/source/github

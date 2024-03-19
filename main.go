@@ -5,6 +5,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 // @title Go-Gateway  API
@@ -52,11 +55,12 @@ import (
 
 // @x-extension-openapi {"example": "value on a json format"}
 func main() {
+	// server.Migrate()
 	err := server.InitModule("./conf/dev/")
 	if err != nil {
 		panic(err)
 	}
-	
+
 	server.HttpServerRun()
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)

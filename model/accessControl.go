@@ -1,5 +1,12 @@
 package model
 
+import (
+	mysqlLib "go-gateway/lib/mysql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
 type AccessControl struct {
 	AbstractModel
 	ServiceInfoID   uint
@@ -15,3 +22,8 @@ func (t *AccessControl) TableName() string {
 	return "gateway_access_control"
 }
 
+
+func (t *AccessControl) Find(c *gin.Context, tx *gorm.DB) error {
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()),mysqlLib.LogicalObjects())
+	return query.Find(t).Error
+}

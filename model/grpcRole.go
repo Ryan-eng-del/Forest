@@ -1,5 +1,12 @@
 package model
 
+import (
+	mysqlLib "go-gateway/lib/mysql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
 
 type GrpcRule struct {
 	ID        uint `json:"id" gorm:"primary_key"`
@@ -10,4 +17,9 @@ type GrpcRule struct {
 
 func (t *GrpcRule) TableName() string {
 	return "gateway_grpc_rule"
+}
+
+func (t *GrpcRule) Find(c *gin.Context, tx *gorm.DB) error {
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()),mysqlLib.LogicalObjects())
+	return query.Find(t).Error
 }

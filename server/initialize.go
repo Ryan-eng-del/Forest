@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"fmt"
 	baseLib "go-gateway/lib/base"
 	confLib "go-gateway/lib/conf"
@@ -12,6 +13,11 @@ import (
 	"log"
 	"os"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 
@@ -21,6 +27,25 @@ const (
 	RedisConfName = "redis"
 )
 
+func Migrate() {
+	db, _ := sql.Open("mysql", "root:123456@tcp(127.0.0.1:3307)/go_gateway?charset=utf8&parseTime=true&loc=Asia%2FChongqing&multiStatements=true")
+	driver, _ := mysql.WithInstance(db, &mysql.Config{})	
+	m,err := migrate.NewWithDatabaseInstance(
+			"file:///Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/migrations",
+			"go_gateway", 
+			driver,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	err = m.Up()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+
+}
 
 func InitModule(configPath string) error{
 	return initModule(configPath, []string{"base", "mysql", "redis"})

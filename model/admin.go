@@ -4,6 +4,7 @@ import (
 	"errors"
 	adminDto "go-gateway/dto/admin"
 	lib "go-gateway/lib/func"
+
 	mysqlLib "go-gateway/lib/mysql"
 
 	"github.com/gin-gonic/gin"
@@ -41,7 +42,7 @@ func (t *Admin) LoginCheck(c *gin.Context, db *gorm.DB, params adminDto.AdminLog
 
 func (t *Admin) FindByName(c *gin.Context, db *gorm.DB, search string) (*Admin, error) {
 	out := &Admin{}
-	err := db.Scopes(mysqlLib.LogicalObjects).WithContext(c).Where("user_name = ?", search).Find(&out).Error
+	err := db.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()), mysqlLib.LogicalObjects()).WithContext(c).Where("user_name = ?", search).First(&out).Error
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +51,7 @@ func (t *Admin) FindByName(c *gin.Context, db *gorm.DB, search string) (*Admin, 
 
 func (t *Admin) FindById(c *gin.Context, db *gorm.DB, id uint) (*Admin, error) {
 	out := &Admin{}
-	err := db.Scopes(mysqlLib.LogicalObjects).WithContext(c).First(out, id).Error
+	err := db.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()), mysqlLib.LogicalObjects()).WithContext(c).First(out, id).Error
 	if err != nil {
 		return nil, err
 	}
