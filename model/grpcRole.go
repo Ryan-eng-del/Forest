@@ -16,7 +16,7 @@ type GrpcRule struct {
 }
 
 func (t *GrpcRule) TableName() string {
-	return "gateway_grpc_rule"
+	return "gateway_service_grpc_rule"
 }
 
 func (t *GrpcRule) Find(c *gin.Context, tx *gorm.DB) error {

@@ -24,7 +24,7 @@ type LoadBalance struct {
 }
 
 func (t *LoadBalance) TableName() string {
-	return "gateway_load_balance"
+	return "gateway_service_load_balance"
 }
 
 func (t *LoadBalance) Find(c *gin.Context, tx *gorm.DB) error {

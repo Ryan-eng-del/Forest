@@ -20,7 +20,7 @@ type HttpRule struct {
 }
 
 func (t *HttpRule) TableName() string {
-	return "gateway_http_rule"
+	return "gateway_service_http_rule"
 }
 
 

@@ -19,7 +19,7 @@ type AccessControl struct {
 }
 
 func (t *AccessControl) TableName() string {
-	return "gateway_access_control"
+	return "gateway_service_access_control"
 }
 
 

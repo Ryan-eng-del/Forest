@@ -14,7 +14,7 @@ type TcpRule struct {
 }
 
 func (t *TcpRule) TableName() string {
-	return "gateway_tcp_rule"
+	return "gateway_service_tcp_rule"
 }
 
 

@@ -9,7 +9,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
 type Service struct {
 	AbstractModel
 	LoadType    int       `json:"load_type" gorm:"comment:负载类型 0=http 1=tcp 2=grpc;"`
@@ -80,5 +79,5 @@ func (t *Service) ServiceDetail (c *gin.Context, tx *gorm.DB) (error) {
 
 
 func (t *Service) TableName() string {
-	return "gateway_service"
+	return "gateway_service_info"
 }

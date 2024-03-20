@@ -1,0 +1,1 @@
+DELETE FROM `gateway_admin`;

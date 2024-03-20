@@ -1,0 +1,6 @@
+[INFO ][2024-03-20T19:46:52.202][trace.go:70] _com_request_in||uri=/api/admin_login/login||method=POST||cspanid=||spanid=a552cea95f818391||args=map[]||body={
+  "password": "123456",
+  "username": "admin"
+}||from=::1||traceid=c0a8020565faccacaa60076b8c482bb0
+[INFO ][2024-03-20T19:46:52.202][trace.go:70] _com_mysql_failure||sql=SELECT * FROM `gateway_admin` WHERE user_name = 'admin' AND is_deleted = 0 ORDER BY `gateway_admin`.`id` LIMIT 1||current_time=2024-03-20 19:46:52||err=Error 1054 (42S22): Unknown column 'user_name' in 'where clause'||traceid=c0a8020565faccacaa60076b8c482bb0||FileWithLineNum=/Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/model/admin.go:44||proc_time=70||cspanid=||spanid=a552cea95f818391||rows=0
+[INFO ][2024-03-20T19:46:52.202][trace.go:70] _com_request_out||method=POST||args=map[]||from=::1||proc_time=0.07594375||traceid=c0a8020565faccacaa60076b8c482bb0||cspanid=||uri=/api/admin_login/login||response={"errno":2002,"errmsg":"用户信息不存在","data":"","trace_id":"c0a8020565faccacaa60076b8c482bb0","stack":"用户信息不存在"}||spanid=a552cea95f818391
