@@ -79,9 +79,6 @@ CREATE TABLE `auth_user_code` (
   UNIQUE KEY `user_code_unique_user` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 
-
-
-
 CREATE TABLE `annotation_genomes_database` (
   `ftp_path` varchar(512) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '文件url',
   `taxId` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '分类学id',

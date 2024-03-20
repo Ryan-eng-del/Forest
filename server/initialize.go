@@ -38,7 +38,6 @@ func Migrate() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
 	err = m.Up()
 	if err != nil {
 		log.Fatal(err)
