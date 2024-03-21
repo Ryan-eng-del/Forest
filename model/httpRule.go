@@ -10,6 +10,7 @@ import (
 type HttpRule struct {
 	ID             uint  `json:"id" gorm:"primary_key"`
 	ServiceInfoID      uint  `json:"service_id" gorm:"comment:服务id"`
+	Service *Service `json:"service,omitempty" gorm:"foreignKey:ServiceInfoID;references:ID"`
 	RuleType       int    `json:"rule_type" gorm:"comment:匹配类型 domain=域名, url_prefix=url前缀"`
 	Rule           string `json:"rule" gorm:"column:rule;type:varchar(255);" comment:"type=domain表示域名，type=url_prefix时表示url前缀"`
 	NeedHttps      bool    `json:"need_https" gorm:"column:need_https" comment:"type=支持https 1=支持"`
@@ -23,8 +24,11 @@ func (t *HttpRule) TableName() string {
 	return "gateway_service_http_rule"
 }
 
-
-func (t *HttpRule) Find(c *gin.Context, tx *gorm.DB) error {
-	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()),mysqlLib.LogicalObjects())
-	return query.Find(t).Error
+func (t *HttpRule) Find(c *gin.Context, tx *gorm.DB) (*HttpRule, error) {
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()))
+	result := query.Find(t, "service_id = ?", t.ServiceInfoID).Error
+	if t.ID == 0 {
+		return nil, result
+	}
+	return t, result
 }

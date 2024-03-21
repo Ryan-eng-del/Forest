@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type AdminController struct {}
@@ -35,10 +34,15 @@ func RegisterAuth(group gin.IRoutes) {
 // @Success 200 {object} public.Response{data=adminDto.AdminInfoOutput} "success"
 // @Router /admin/info [get]
 func (a *AdminController) AdminInfo(c *gin.Context) {
-	tx, _ := mysqlLib.GetGormPool("default")
-	admin, err := a.GetAdmin(c, tx)
-	if err != nil {
-		public.ResponseError(c, 2000, err)
+	anyAdmin, exist := c.Get("admin")
+	if !exist {
+		public.ResponseError(c, 2000, errors.New("admin not found"))
+		return
+	}
+
+	admin, ok := anyAdmin.(*model.Admin); 
+	if !ok {
+		public.ResponseError(c, 2000, errors.New("not a model admin"))
 		return
 	}
 
@@ -71,10 +75,16 @@ func (a *AdminController) AdminChangePwd(c *gin.Context) {
 	}
 
 	tx, _ := mysqlLib.GetGormPool("default")
-	admin, err := a.GetAdmin(c, tx)
 
-	if err != nil {
-		public.ResponseError(c, 2000, err)
+	anyAdmin, exist := c.Get("admin")
+	if !exist {
+		public.ResponseError(c, 2000, errors.New("admin not found"))
+		return
+	}
+
+	admin, ok := anyAdmin.(*model.Admin); 
+	if !ok {
+		public.ResponseError(c, 2000, errors.New("not a model admin"))
 		return
 	}
 
@@ -83,20 +93,7 @@ func (a *AdminController) AdminChangePwd(c *gin.Context) {
 		public.ResponseError(c, 2001, err)
 		return
 	}
-	
+
 	public.ResponseSuccess(c, "")
 }
 
-
-func (a *AdminController) GetAdmin(c *gin.Context, tx *gorm.DB) (*model.Admin, error){
-	userId, _:= c.Get("UserID")
-	adminId, ok := userId.(uint); 
-	if !ok {
-		return nil, errors.New("not a valid user")
-	}
-
-	admin := &model.Admin{}
-	
-	admin, err := admin.FindById(c, tx, adminId)
-	return admin, err
-}

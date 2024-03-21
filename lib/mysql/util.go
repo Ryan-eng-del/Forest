@@ -15,7 +15,7 @@ func WithContextAndTable (c *gin.Context, tableName string) func(db *gorm.DB) *g
 
 func LogicalObjects() func(db *gorm.DB) *gorm.DB{
   return func(db *gorm.DB) *gorm.DB {
-    return db.Where("is_deleted = ?", 0)
+    return db.Where("is_delete = ?", 0)
   }
 }
 

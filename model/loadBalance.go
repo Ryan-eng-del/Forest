@@ -9,7 +9,8 @@ import (
 
 type LoadBalance struct {
 	ID            int64  `json:"id" gorm:"primary_key"`
-	ServiceInfoID     uint  `json:"service_id" gorm:"column:service_id" description:"服务id	"`
+	ServiceInfoID      uint  `json:"service_id" gorm:"comment:服务id"`
+	Service *Service `json:"service,omitempty" gorm:"foreignKey:ServiceInfoID;references:ID"`
 	CheckMethod   int    `json:"check_method" gorm:"column:check_method;type:int;size:14" description:"检查方法 tcpchk=检测端口是否握手成功	"`
 	CheckTimeout  uint    `json:"check_timeout" gorm:"column:check_timeout;unsigned;size:15;not null;" description:"check超时时间"`
 	CheckInterval int    `json:"check_interval" gorm:"column:check_interval" description:"检查间隔, 单位s		"`
@@ -27,7 +28,14 @@ func (t *LoadBalance) TableName() string {
 	return "gateway_service_load_balance"
 }
 
-func (t *LoadBalance) Find(c *gin.Context, tx *gorm.DB) error {
-	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()),mysqlLib.LogicalObjects())
-	return query.Find(t).Error
+func (t *LoadBalance) Find(c *gin.Context, tx *gorm.DB) (*LoadBalance, error) {
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()))
+
+	
+	result := query.Find(t, "service_id = ?", t.ServiceInfoID).Error
+
+	if t.ID == 0 {
+		return nil, result
+	}
+	return t, result
 }

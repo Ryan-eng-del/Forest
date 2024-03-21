@@ -8,8 +8,9 @@ import (
 )
 
 type AccessControl struct {
-	AbstractModel
-	ServiceInfoID   uint
+	ID        uint `json:"id" gorm:"primarykey;comment:自增主键"`
+	ServiceInfoID      uint  `json:"service_id" gorm:"comment:服务id"`
+	Service *Service `json:"service,omitempty" gorm:"foreignKey:ServiceInfoID;references:ID"`
 	OpenAuth          bool  `json:"open_auth" gorm:"column:open_auth;comment:是否开启权限 1=开启" `
 	BlackList         string `json:"black_list" gorm:"column:black_list;type:varchar(1000);comment:黑名单ip" `
 	WhiteList         string `json:"white_list" gorm:"column:white_list;type:varchar(1000);comment:白名单ip" `
@@ -22,8 +23,11 @@ func (t *AccessControl) TableName() string {
 	return "gateway_service_access_control"
 }
 
-
-func (t *AccessControl) Find(c *gin.Context, tx *gorm.DB) error {
-	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()),mysqlLib.LogicalObjects())
-	return query.Find(t).Error
+func (t *AccessControl) Find(c *gin.Context, tx *gorm.DB) (*AccessControl, error) {
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()))
+	result:= query.Find(t, "service_id = ?", t.ServiceInfoID).Error
+	if t.ID == 0 {
+		return nil, result
+	}
+	return t, result
 }

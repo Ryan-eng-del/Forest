@@ -13,7 +13,7 @@ import (
 
 type Admin struct {
 	AbstractModel
-	UserName string `json:"user_name" gorm:"type:varchar(255);not null;comment:用户名" `	
+	UserName string `json:"username" gorm:"type:varchar(255);not null;column:username;comment:用户名" `	
 	Salt string `json:"salt" gorm:"type:varchar(50);not null;comment:盐值" `
 	Password string `json:"password" gorm:"type:varchar(255);comment:密码;not null"`
 }
@@ -31,7 +31,6 @@ func (t *Admin) LoginCheck(c *gin.Context, db *gorm.DB, params adminDto.AdminLog
 	}
 
 	saltPassword := lib.GenSaltPassword(admin.Salt, params.Password)
-
 	if admin.Password != saltPassword {
 		return nil, errors.New("密码输入不正确")
 	}
@@ -41,7 +40,7 @@ func (t *Admin) LoginCheck(c *gin.Context, db *gorm.DB, params adminDto.AdminLog
 
 func (t *Admin) FindByName(c *gin.Context, db *gorm.DB, search string) (*Admin, error) {
 	out := &Admin{}
-	err := db.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()), mysqlLib.LogicalObjects()).WithContext(c).Where("user_name = ?", search).First(&out).Error
+	err := db.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()), mysqlLib.LogicalObjects()).WithContext(c).Where("username = ?", search).First(&out).Error
 	if err != nil {
 		return nil, err
 	}

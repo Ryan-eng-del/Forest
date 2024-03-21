@@ -7,7 +7,6 @@ import (
 	libMysql "go-gateway/lib/mysql"
 	"go-gateway/model"
 	pubic "go-gateway/public"
-	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,7 +44,6 @@ func (adminLogin *AdminLoginController) Login (c *gin.Context) {
 		pubic.ResponseError(c, 2001, err)
 		return
 	}
-	
 
 	admin := &model.Admin{}
 	admin, err = admin.LoginCheck(c, tx, params)
@@ -55,7 +53,6 @@ func (adminLogin *AdminLoginController) Login (c *gin.Context) {
 	}
 
 	token, err := _jwt.NewJWT().GenerateTokenWithUserID(admin.ID)
-	log.Println(token, "token")
 	if err != nil {
 		pubic.ResponseError(c, 2004, err)
 		return

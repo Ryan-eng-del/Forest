@@ -2,6 +2,7 @@ package server
 
 import (
 	adminController "go-gateway/controller/admin"
+	serviceController "go-gateway/controller/service"
 	_ "go-gateway/docs"
 
 	mids "go-gateway/middlewares"
@@ -22,16 +23,20 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		})
 	})
 
-	api := router.Group("api")
+	api := router.Group("/api")
 	api.Use(mids.RequestLogMiddleware(),mids.RecoveryMiddleware(),mids.TranslationMiddleware())
 
-
-
+	
 	{
-		adminLogin := api.Group("admin_login")
-		adminInfo := api.Group("admin").Use(mids.JWTTokenAuth())
+		adminLogin := api.Group("/admin_login")
+		adminInfo := api.Group("/admin").Use(mids.JWTTokenAuth())
 		adminController.Register(adminLogin)
 		adminController.RegisterAuth(adminInfo)
+	}
+
+	{
+		serviceRouter := api.Group("/service").Use(mids.JWTTokenAuth())
+		serviceController.Register(serviceRouter)
 	}
 
 
