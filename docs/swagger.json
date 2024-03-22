@@ -269,6 +269,54 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "服务删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "服务删除",
+                "operationId": "/service/{service_id}",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "服务ID",
+                        "name": "service_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/public.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
             }
         }
     },
@@ -359,26 +407,20 @@
                 "clientip_flow_limit": {
                     "type": "integer"
                 },
-                "createdAt": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
-                },
-                "isDeleted": {
-                    "type": "boolean"
                 },
                 "open_auth": {
                     "type": "boolean"
                 },
-                "serviceInfoID": {
-                    "type": "integer"
+                "service": {
+                    "$ref": "#/definitions/model.Service"
                 },
                 "service_flow_limit": {
                     "type": "integer"
                 },
-                "updatedAt": {
-                    "type": "string"
+                "service_id": {
+                    "type": "integer"
                 },
                 "white_host_name": {
                     "type": "string"
@@ -400,6 +442,9 @@
                 "port": {
                     "type": "integer"
                 },
+                "service": {
+                    "$ref": "#/definitions/model.Service"
+                },
                 "service_id": {
                     "type": "integer"
                 }
@@ -415,7 +460,7 @@
                     "type": "integer"
                 },
                 "need_https": {
-                    "type": "boolean"
+                    "type": "integer"
                 },
                 "need_strip_uri": {
                     "type": "boolean"
@@ -428,6 +473,9 @@
                 },
                 "rule_type": {
                     "type": "integer"
+                },
+                "service": {
+                    "$ref": "#/definitions/model.Service"
                 },
                 "service_id": {
                     "type": "integer"
@@ -461,6 +509,9 @@
                 "round_type": {
                     "type": "integer"
                 },
+                "service": {
+                    "$ref": "#/definitions/model.Service"
+                },
                 "service_id": {
                     "type": "integer"
                 },
@@ -484,26 +535,14 @@
         "model.Service": {
             "type": "object",
             "properties": {
-                "accessControl": {
-                    "$ref": "#/definitions/model.AccessControl"
-                },
-                "createdAt": {
+                "create_at": {
                     "type": "string"
-                },
-                "grpcRole": {
-                    "$ref": "#/definitions/model.GrpcRule"
-                },
-                "httpRule": {
-                    "$ref": "#/definitions/model.HttpRule"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "isDeleted": {
-                    "type": "boolean"
-                },
-                "loadBalance": {
-                    "$ref": "#/definitions/model.LoadBalance"
+                "isDelete": {
+                    "type": "integer"
                 },
                 "load_type": {
                     "type": "integer"
@@ -514,10 +553,7 @@
                 "service_name": {
                     "type": "string"
                 },
-                "tcpRole": {
-                    "$ref": "#/definitions/model.TcpRule"
-                },
-                "updatedAt": {
+                "update_at": {
                     "type": "string"
                 }
             }
@@ -553,6 +589,9 @@
                 },
                 "port": {
                     "type": "integer"
+                },
+                "service": {
+                    "$ref": "#/definitions/model.Service"
                 },
                 "service_id": {
                     "type": "integer"
@@ -597,6 +636,9 @@
         "serviceDto.ServiceListItemOutput": {
             "type": "object",
             "properties": {
+                "createAt": {
+                    "type": "string"
+                },
                 "id": {
                     "description": "id",
                     "type": "integer"
@@ -628,6 +670,9 @@
                 "total_node": {
                     "description": "节点数",
                     "type": "integer"
+                },
+                "updateAt": {
+                    "type": "string"
                 }
             }
         },

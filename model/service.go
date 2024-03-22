@@ -85,3 +85,15 @@ func (t *Service) ServiceDetail (c *gin.Context, tx *gorm.DB)  (*ServiceDetail, 
 func (t *Service) TableName() string {
 	return "gateway_service_info"
 }
+
+
+func (t *Service) FindById(c *gin.Context, tx *gorm.DB, serviceId int) (*Service, error) {
+	out := &Service{}
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()), mysqlLib.LogicalObjects())
+	return out, query.First(out, serviceId).Error
+}
+
+
+func (t *Service) Save(c *gin.Context, tx *gorm.DB) error {
+	return tx.WithContext(c).Save(t).Error
+}

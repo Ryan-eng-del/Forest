@@ -9,7 +9,7 @@ type AbstractModel struct {
 	ID        uint `gorm:"primarykey;comment:自增主键"`
 	CreateAt public.LocalTime  `json:"create_at" gorm:"comment:创建时间"`
 	UpdateAt public.LocalTime `json:"update_at" gorm:"comment:更新时间"`
-	IsDelete bool  `gorm:"comment:是否删除"`
+	IsDelete int8  `gorm:"comment:是否删除"`
 }
 
 type ServiceDetail struct {

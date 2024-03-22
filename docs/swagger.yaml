@@ -59,20 +59,16 @@ definitions:
         type: string
       clientip_flow_limit:
         type: integer
-      createdAt:
-        type: string
       id:
         type: integer
-      isDeleted:
-        type: boolean
       open_auth:
         type: boolean
+      service:
+        $ref: '#/definitions/model.Service'
       service_flow_limit:
         type: integer
-      serviceInfoID:
+      service_id:
         type: integer
-      updatedAt:
-        type: string
       white_host_name:
         type: string
       white_list:
@@ -86,6 +82,8 @@ definitions:
         type: integer
       port:
         type: integer
+      service:
+        $ref: '#/definitions/model.Service'
       service_id:
         type: integer
     type: object
@@ -96,7 +94,7 @@ definitions:
       id:
         type: integer
       need_https:
-        type: boolean
+        type: integer
       need_strip_uri:
         type: boolean
       need_websocket:
@@ -105,6 +103,8 @@ definitions:
         type: string
       rule_type:
         type: integer
+      service:
+        $ref: '#/definitions/model.Service'
       service_id:
         type: integer
       url_rewrite:
@@ -126,6 +126,8 @@ definitions:
         type: string
       round_type:
         type: integer
+      service:
+        $ref: '#/definitions/model.Service'
       service_id:
         type: integer
       upstream_connect_timeout:
@@ -141,29 +143,19 @@ definitions:
     type: object
   model.Service:
     properties:
-      accessControl:
-        $ref: '#/definitions/model.AccessControl'
-      createdAt:
+      create_at:
         type: string
-      grpcRole:
-        $ref: '#/definitions/model.GrpcRule'
-      httpRule:
-        $ref: '#/definitions/model.HttpRule'
       id:
         type: integer
-      isDeleted:
-        type: boolean
+      isDelete:
+        type: integer
       load_type:
         type: integer
-      loadBalance:
-        $ref: '#/definitions/model.LoadBalance'
       service_desc:
         type: string
       service_name:
         type: string
-      tcpRole:
-        $ref: '#/definitions/model.TcpRule'
-      updatedAt:
+      update_at:
         type: string
     type: object
   model.ServiceDetail:
@@ -187,6 +179,8 @@ definitions:
         type: integer
       port:
         type: integer
+      service:
+        $ref: '#/definitions/model.Service'
       service_id:
         type: integer
     type: object
@@ -220,6 +214,8 @@ definitions:
     - GROUPALL_SAVE_FLOWERROR
   serviceDto.ServiceListItemOutput:
     properties:
+      createAt:
+        type: string
       id:
         description: id
         type: integer
@@ -244,6 +240,8 @@ definitions:
       total_node:
         description: 节点数
         type: integer
+      updateAt:
+        type: string
     type: object
   serviceDto.ServiceListOutput:
     properties:
@@ -388,6 +386,34 @@ paths:
       tags:
       - Service
   /service/{service_id}:
+    delete:
+      consumes:
+      - application/json
+      description: 服务删除
+      operationId: /service/{service_id}
+      parameters:
+      - description: 服务ID
+        in: path
+        name: service_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 服务删除
+      tags:
+      - Service
     get:
       consumes:
       - application/json

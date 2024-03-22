@@ -23,3 +23,8 @@
     [log.console_writer]        #工作台输出
         on = true
         color = true
+
+[cluster]
+    cluster_ip="127.0.0.1"
+    cluster_port="8080"
+    cluster_ssl_port="4433"

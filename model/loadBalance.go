@@ -2,6 +2,7 @@ package model
 
 import (
 	mysqlLib "go-gateway/lib/mysql"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -27,6 +28,11 @@ type LoadBalance struct {
 func (t *LoadBalance) TableName() string {
 	return "gateway_service_load_balance"
 }
+
+func (t *LoadBalance) GetIPListByModel() []string {
+	return strings.Split(t.IpList, ",")
+}
+
 
 func (t *LoadBalance) Find(c *gin.Context, tx *gorm.DB) (*LoadBalance, error) {
 	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()))

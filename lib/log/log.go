@@ -302,6 +302,10 @@ func NewSingleLoggerDefault() {
 	}
 }
 
+func GetLogger() *Logger {
+	return loggerDefault
+}
+
 func SetLayout(layout string) {
 	NewSingleLoggerDefault()
 	loggerDefault.layout = layout

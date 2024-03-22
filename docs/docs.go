@@ -275,6 +275,54 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "服务删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "服务删除",
+                "operationId": "/service/{service_id}",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "服务ID",
+                        "name": "service_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/public.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
             }
         }
     },
@@ -365,26 +413,20 @@ const docTemplate = `{
                 "clientip_flow_limit": {
                     "type": "integer"
                 },
-                "createdAt": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
-                },
-                "isDeleted": {
-                    "type": "boolean"
                 },
                 "open_auth": {
                     "type": "boolean"
                 },
-                "serviceInfoID": {
-                    "type": "integer"
+                "service": {
+                    "$ref": "#/definitions/model.Service"
                 },
                 "service_flow_limit": {
                     "type": "integer"
                 },
-                "updatedAt": {
-                    "type": "string"
+                "service_id": {
+                    "type": "integer"
                 },
                 "white_host_name": {
                     "type": "string"
@@ -406,6 +448,9 @@ const docTemplate = `{
                 "port": {
                     "type": "integer"
                 },
+                "service": {
+                    "$ref": "#/definitions/model.Service"
+                },
                 "service_id": {
                     "type": "integer"
                 }
@@ -421,7 +466,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "need_https": {
-                    "type": "boolean"
+                    "type": "integer"
                 },
                 "need_strip_uri": {
                     "type": "boolean"
@@ -434,6 +479,9 @@ const docTemplate = `{
                 },
                 "rule_type": {
                     "type": "integer"
+                },
+                "service": {
+                    "$ref": "#/definitions/model.Service"
                 },
                 "service_id": {
                     "type": "integer"
@@ -467,6 +515,9 @@ const docTemplate = `{
                 "round_type": {
                     "type": "integer"
                 },
+                "service": {
+                    "$ref": "#/definitions/model.Service"
+                },
                 "service_id": {
                     "type": "integer"
                 },
@@ -490,26 +541,14 @@ const docTemplate = `{
         "model.Service": {
             "type": "object",
             "properties": {
-                "accessControl": {
-                    "$ref": "#/definitions/model.AccessControl"
-                },
-                "createdAt": {
+                "create_at": {
                     "type": "string"
-                },
-                "grpcRole": {
-                    "$ref": "#/definitions/model.GrpcRule"
-                },
-                "httpRule": {
-                    "$ref": "#/definitions/model.HttpRule"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "isDeleted": {
-                    "type": "boolean"
-                },
-                "loadBalance": {
-                    "$ref": "#/definitions/model.LoadBalance"
+                "isDelete": {
+                    "type": "integer"
                 },
                 "load_type": {
                     "type": "integer"
@@ -520,10 +559,7 @@ const docTemplate = `{
                 "service_name": {
                     "type": "string"
                 },
-                "tcpRole": {
-                    "$ref": "#/definitions/model.TcpRule"
-                },
-                "updatedAt": {
+                "update_at": {
                     "type": "string"
                 }
             }
@@ -559,6 +595,9 @@ const docTemplate = `{
                 },
                 "port": {
                     "type": "integer"
+                },
+                "service": {
+                    "$ref": "#/definitions/model.Service"
                 },
                 "service_id": {
                     "type": "integer"
@@ -603,6 +642,9 @@ const docTemplate = `{
         "serviceDto.ServiceListItemOutput": {
             "type": "object",
             "properties": {
+                "createAt": {
+                    "type": "string"
+                },
                 "id": {
                     "description": "id",
                     "type": "integer"
@@ -634,6 +676,9 @@ const docTemplate = `{
                 "total_node": {
                     "description": "节点数",
                     "type": "integer"
+                },
+                "updateAt": {
+                    "type": "string"
                 }
             }
         },
