@@ -26,8 +26,144 @@ func Register(group gin.IRoutes) {
 	group.DELETE("/:serviceId", service.ServiceDelete)
 	group.GET("/:serviceId", service.ServiceDetail)
 	group.POST("/http", service.ServiceCreateHttp)
+	group.PATCH("/http/:serviceId", service.ServiceHttpUpdate)
 }
 
+// ServiceHttpUpdate godoc
+// @Summary 更新 http 服务
+// @Description 更新 http 服务
+// @Tags Service
+// @ID /service/http/{service_id}
+// @Accept  json
+// @Produce  json
+// @security ApiKeyAuth
+// @Param service_id path string true "服务id"
+// @Param info body serviceDto.ServiceAddHttpInput true "body"
+// @Success 200 {object} public.Response{data=string} "success"
+// @Router /service/http/{service_id} [patch]
+func (s *ServiceController) ServiceHttpUpdate(c *gin.Context) {
+	serviceIdStr := c.Param("serviceId")
+	serviceId, err := strconv.ParseInt(serviceIdStr, 10, 64)
+
+	if err != nil {
+		public.ResponseError(c, public.ResponseCode(2001), err)
+		return
+	}
+
+	params := serviceDto.ServiceAddHttpInput{}
+	if err := params.BindValidParam(c); err != nil {
+		public.ResponseError(c, 2000, err)
+		return
+	}
+
+	if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
+		public.ResponseError(c, 2001, errors.New("IP列表与权重列表数量不一致"))
+		return
+	}
+
+	serviceInfo := model.Service{}
+	tx, err := libMysql.GetGormPool("default")
+
+	if err != nil {
+		public.ResponseError(c, public.ResponseCode(2002), err)
+		return
+	}
+
+	tx = tx.Begin()
+	service, err := serviceInfo.Find(c, tx, &model.Service{
+		AbstractModel: model.AbstractModel{ID: uint(serviceId)},
+	})
+
+	if err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2003, errors.New("服务不存在"))
+		return
+	}
+
+	serviceDetail, err := service.ServiceDetail(c, tx)
+
+	if err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2003, errors.New("服务不存在"))
+		return
+	}
+
+	info := serviceDetail.Info
+	info.ServiceDesc = params.ServiceDesc
+
+	if err := info.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2005, err)
+		return
+	}
+
+
+	httpRule := serviceDetail.HTTPRule
+	httpRule.NeedHttps = params.NeedHttps
+	httpRule.NeedStripUri = params.NeedStripUri
+	httpRule.NeedWebsocket = params.NeedWebsocket
+	httpRule.UrlRewrite = params.UrlRewrite
+	httpRule.HeaderTransfor = params.HeaderTransfor
+
+	if err := httpRule.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2006, err)
+		return
+	}
+
+
+	accessControl := serviceDetail.AccessControl
+	accessControl.OpenAuth = params.OpenAuth
+	accessControl.BlackList = params.BlackList
+	accessControl.WhiteList = params.WhiteList
+	accessControl.ClientIPFlowLimit = params.ClientipFlowLimit
+	accessControl.ServiceFlowLimit = params.ServiceFlowLimit
+	if err := accessControl.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2007, err)
+		return
+	}
+
+
+
+	loadbalance := serviceDetail.LoadBalance
+	loadbalance.RoundType = params.RoundType
+	loadbalance.IpList = params.IpList
+	loadbalance.WeightList = params.WeightList
+	loadbalance.UpstreamConnectTimeout = params.UpstreamConnectTimeout
+	loadbalance.UpstreamHeaderTimeout = params.UpstreamHeaderTimeout
+	loadbalance.UpstreamIdleTimeout = params.UpstreamIdleTimeout
+	loadbalance.UpstreamMaxIdle = params.UpstreamMaxIdle
+	if err := loadbalance.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2008, err)
+		return
+	}
+
+	tx.Commit()
+	public.ResponseSuccess(c, "更新成功")
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+}
+ 
 // ServiceCreate godoc
 // @Summary 创建 http 服务
 // @Description 创建 http 服务

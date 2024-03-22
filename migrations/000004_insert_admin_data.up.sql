@@ -1,1 +1,1 @@
-INSERT IGNORE INTO `gateway_admin` (`id`, `username`, `salt`, `password`, `create_at`, `update_at`, `is_delete`) VALUES (1, 'admin', 'admin', '378af07fa5a8eaf8f3d5c24205d12f57b3dab9bb090cd20a09937599ee493378', '2020-04-10 16:42:05', '2020-04-21 06:35:08', 0);
+INSERT IGNORE INTO `gateway_admin` (`id`, `username`, `salt`, `password`, `create_at`, `update_at`, `is_delete`) VALUES (1, 'admin', 'admin', '2823d896e9822c0833d41d4904f0c00756d718570fce49b9a379a62c804689d3', '2020-04-10 16:42:05', '2020-04-21 06:35:08', 0);

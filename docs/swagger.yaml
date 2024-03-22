@@ -311,7 +311,7 @@ definitions:
         type: string
       weight_list:
         description: 权重列表
-        example: ""
+        example: "1"
         type: string
       white_list:
         description: 白名单ip
@@ -582,6 +582,41 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 创建 http 服务
+      tags:
+      - Service
+  /service/http/{service_id}:
+    patch:
+      consumes:
+      - application/json
+      description: 更新 http 服务
+      operationId: /service/http/{service_id}
+      parameters:
+      - description: 服务id
+        in: path
+        name: service_id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/serviceDto.ServiceAddHttpInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 更新 http 服务
       tags:
       - Service
 securityDefinitions:

@@ -279,6 +279,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/http/{service_id}": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "更新 http 服务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "更新 http 服务",
+                "operationId": "/service/http/{service_id}",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "服务id",
+                        "name": "service_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "body",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serviceDto.ServiceAddHttpInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/public.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/service/{service_id}": {
             "get": {
                 "security": [
@@ -818,7 +877,7 @@ const docTemplate = `{
                 "weight_list": {
                     "description": "权重列表",
                     "type": "string",
-                    "example": ""
+                    "example": "1"
                 },
                 "white_list": {
                     "description": "白名单ip",

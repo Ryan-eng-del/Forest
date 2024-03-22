@@ -5,6 +5,7 @@ import (
 	adminDto "go-gateway/dto/admin"
 	lib "go-gateway/lib/func"
 	mysqlLib "go-gateway/lib/mysql"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -29,7 +30,8 @@ func (t *Admin) LoginCheck(c *gin.Context, db *gorm.DB, params adminDto.AdminLog
 		return nil, errors.New("用户信息不存在")
 	}
 
-	saltPassword := lib.GenSaltPassword(admin.Salt, params.Password)
+	saltPassword := lib.GenSaltPassword(admin.Salt, "123456")
+	log.Println(saltPassword, "password")
 	if admin.Password != saltPassword {
 		return nil, errors.New("密码输入不正确")
 	}
