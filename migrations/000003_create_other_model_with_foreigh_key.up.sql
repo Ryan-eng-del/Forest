@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS `gateway_service_info` (
-  `id` bigint(20) UNSIGNED NOT NULL COMMENT '自增主键',
+  `id` bigint(20) UNSIGNED AUTO_INCREMENT NOT NULL COMMENT '自增主键',
   `load_type` tinyint(4) NOT NULL COMMENT '负载类型 0=http 1=tcp 2=grpc',
   `service_name` varchar(255) NOT NULL COMMENT '服务名称 6-128 数字字母下划线',
   `service_desc` varchar(255) NOT NULL COMMENT '服务描述',
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `gateway_service_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='网关基本信息表';
 
 CREATE TABLE IF NOT EXISTS `gateway_service_access_control` (
-  `id` bigint(20) UNSIGNED NOT NULL COMMENT '自增主键',
+  `id` bigint(20) UNSIGNED AUTO_INCREMENT NOT NULL COMMENT '自增主键',
   `service_id` bigint(20) UNSIGNED NOT NULL COMMENT '服务id',
   `open_auth` tinyint(4) NOT NULL COMMENT '是否开启权限 1=开启',
   `black_list` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '黑名单ip',
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `gateway_service_access_control` (
 
 
 CREATE TABLE IF NOT EXISTS `gateway_service_grpc_rule` (
-  `id` bigint(20) UNSIGNED NOT NULL COMMENT '自增主键',
+  `id` bigint(20) UNSIGNED AUTO_INCREMENT NOT NULL COMMENT '自增主键',
   `service_id` bigint(20) UNSIGNED NOT NULL  COMMENT '服务id',
   `port` int(5) NOT NULL  COMMENT '端口',
   `header_transfor` varchar(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL  COMMENT 'header转换支持增加(add)、删除(del)、修改(edit) 格式: add headname headvalue 多个逗号间隔',
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `gateway_service_grpc_rule` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='网关路由匹配表';
 
 CREATE TABLE IF NOT EXISTS `gateway_service_http_rule` (
-  `id` bigint(20) UNSIGNED NOT NULL COMMENT '自增主键',
+  `id` bigint(20) UNSIGNED AUTO_INCREMENT NOT NULL COMMENT '自增主键',
   `service_id` bigint(20) UNSIGNED NOT NULL COMMENT '服务id',
   `rule_type` tinyint(4) NOT NULL  COMMENT '匹配类型 0=url前缀url_prefix 1=域名domain ',
   `rule` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'type=domain表示域名，type=url_prefix时表示url前缀',
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `gateway_service_http_rule` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='网关路由匹配表';
 
 CREATE TABLE IF NOT EXISTS `gateway_service_load_balance` (
-  `id` bigint(20) UNSIGNED NOT NULL COMMENT '自增主键',
+  `id` bigint(20) UNSIGNED AUTO_INCREMENT NOT NULL COMMENT '自增主键',
   `service_id` bigint(20) UNSIGNED NOT NULL  COMMENT '服务id',
   `check_method` tinyint(20) NOT NULL  COMMENT '检查方法 0=tcpchk,检测端口是否握手成功',
   `check_timeout` int(10) NOT NULL  COMMENT 'check超时时间,单位s',
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `gateway_service_load_balance` (
 
 
 CREATE TABLE IF NOT EXISTS `gateway_service_tcp_rule` (
-  `id` bigint(20) UNSIGNED NOT NULL COMMENT '自增主键',
+  `id` bigint(20) UNSIGNED AUTO_INCREMENT NOT NULL COMMENT '自增主键',
   `service_id` bigint(20) UNSIGNED NOT NULL COMMENT '服务id',
   `port` int(5) NOT NULL  COMMENT '端口号',
   PRIMARY KEY (`id`),

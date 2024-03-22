@@ -7,8 +7,8 @@ import (
 
 type AbstractModel struct {
 	ID        uint `gorm:"primarykey;comment:自增主键"`
-	CreateAt public.LocalTime  `json:"create_at" gorm:"comment:创建时间"`
-	UpdateAt public.LocalTime `json:"update_at" gorm:"comment:更新时间"`
+	CreateAt public.LocalTime  `json:"create_at" gorm:"comment:创建时间;autoCreateTime"`
+	UpdateAt public.LocalTime `json:"update_at" gorm:"comment:更新时间;autoUpdateTime"`
 	IsDelete int8  `gorm:"comment:是否删除"`
 }
 

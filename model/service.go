@@ -10,6 +10,7 @@ import (
 )
 
 type Service struct {
+	// gorm.Model
 	AbstractModel
 	LoadType    public.LoadType       `json:"load_type" gorm:"comment:负载类型 0=http 1=tcp 2=grpc;"`
 	ServiceName string    `json:"service_name" gorm:"comment:服务名称;type:varchar(255);"`
@@ -29,9 +30,8 @@ func (t *Service) PageList(c *gin.Context, tx *gorm.DB, params *serviceDto.Servi
 }
  
 func (t *Service) ServiceDetail (c *gin.Context, tx *gorm.DB)  (*ServiceDetail, error) {
-	
-	httpRule := &HttpRule{ServiceInfoID: t.ID}
-	httpRule, err := httpRule.Find(c, tx)
+	httpInfo := &HttpRule{}
+	httpRule, err := httpInfo.Find(c, tx, &HttpRule{ServiceInfoID: t.ID})
 
 	// 外键查询
 	// log.Printf("httpRule Preload Before %+v",httpRule)
@@ -87,13 +87,17 @@ func (t *Service) TableName() string {
 }
 
 
-func (t *Service) FindById(c *gin.Context, tx *gorm.DB, serviceId int) (*Service, error) {
+func (t *Service) Find(c *gin.Context, tx *gorm.DB, queryStruct *Service) (*Service, error) {
 	out := &Service{}
 	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()), mysqlLib.LogicalObjects())
-	return out, query.First(out, serviceId).Error
+	return out, query.Where(queryStruct).First(out).Error
 }
 
 
 func (t *Service) Save(c *gin.Context, tx *gorm.DB) error {
 	return tx.WithContext(c).Save(t).Error
+}
+
+func (t *Service) Create(c *gin.Context, tx *gorm.DB) error {
+	return tx.WithContext(c).Create(t).Error
 }

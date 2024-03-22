@@ -227,6 +227,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/service/http": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建 http 服务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "创建 http 服务",
+                "operationId": "/service/http",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serviceDto.ServiceAddHttpInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/public.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/service/{service_id}": {
             "get": {
                 "security": [
@@ -417,7 +469,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "open_auth": {
-                    "type": "boolean"
+                    "type": "integer"
                 },
                 "service": {
                     "$ref": "#/definitions/model.Service"
@@ -469,10 +521,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "need_strip_uri": {
-                    "type": "boolean"
+                    "type": "integer"
                 },
                 "need_websocket": {
-                    "type": "boolean"
+                    "type": "integer"
                 },
                 "rule": {
                     "type": "string"
@@ -638,6 +690,142 @@ const docTemplate = `{
                 "CustomizeCode",
                 "GROUPALL_SAVE_FLOWERROR"
             ]
+        },
+        "serviceDto.ServiceAddHttpInput": {
+            "type": "object",
+            "required": [
+                "ip_list",
+                "rule",
+                "service_desc",
+                "service_name",
+                "weight_list"
+            ],
+            "properties": {
+                "black_list": {
+                    "description": "黑名单ip",
+                    "type": "string",
+                    "example": ""
+                },
+                "clientip_flow_limit": {
+                    "description": "客户端ip限流",
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 0
+                },
+                "header_transfor": {
+                    "description": "header转换",
+                    "type": "string",
+                    "example": ""
+                },
+                "ip_list": {
+                    "description": "ip列表",
+                    "type": "string",
+                    "example": "127.0.0.1:8999"
+                },
+                "need_https": {
+                    "description": "支持https",
+                    "type": "integer",
+                    "maximum": 1,
+                    "minimum": 0,
+                    "example": 0
+                },
+                "need_strip_uri": {
+                    "description": "启用strip_uri",
+                    "type": "integer",
+                    "maximum": 1,
+                    "minimum": 0,
+                    "example": 1
+                },
+                "need_websocket": {
+                    "description": "是否支持websocket",
+                    "type": "integer",
+                    "maximum": 1,
+                    "minimum": 0,
+                    "example": 1
+                },
+                "open_auth": {
+                    "description": "关键词",
+                    "type": "integer",
+                    "maximum": 1,
+                    "minimum": 0,
+                    "example": 1
+                },
+                "round_type": {
+                    "description": "轮询方式",
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 0,
+                    "example": 1
+                },
+                "rule": {
+                    "description": "域名或者前缀s",
+                    "type": "string",
+                    "example": "/test"
+                },
+                "rule_type": {
+                    "description": "接入类型",
+                    "type": "integer",
+                    "maximum": 1,
+                    "minimum": 0,
+                    "example": 0
+                },
+                "service_desc": {
+                    "description": "服务描述",
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "example": "test"
+                },
+                "service_flow_limit": {
+                    "description": "服务端限流",
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 0
+                },
+                "service_name": {
+                    "description": "服务名",
+                    "type": "string",
+                    "example": "test"
+                },
+                "upstream_connect_timeout": {
+                    "description": "建立连接超时, 单位s",
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 0
+                },
+                "upstream_header_timeout": {
+                    "description": "获取header超时, 单位s",
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 0
+                },
+                "upstream_idle_timeout": {
+                    "description": "链接最大空闲时间, 单位s",
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 0
+                },
+                "upstream_max_idle": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 0
+                },
+                "url_rewrite": {
+                    "description": "url重写功能",
+                    "type": "string",
+                    "example": ""
+                },
+                "weight_list": {
+                    "description": "权重列表",
+                    "type": "string",
+                    "example": ""
+                },
+                "white_list": {
+                    "description": "白名单ip",
+                    "type": "string",
+                    "example": ""
+                }
+            }
         },
         "serviceDto.ServiceListItemOutput": {
             "type": "object",

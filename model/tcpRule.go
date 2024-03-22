@@ -9,7 +9,7 @@ import (
 
 type TcpRule struct {
 	ID        int64 `json:"id" gorm:"primary_key"`
-	ServiceInfoID      uint  `json:"service_id" gorm:"comment:服务id"`
+	ServiceInfoID      uint  `json:"service_id" gorm:"comment:服务id;column:service_id"`
 	Service *Service `json:"service,omitempty" gorm:"foreignKey:ServiceInfoID;references:ID"`
 	Port      int   `json:"port" gorm:"comment:端口"`
 }

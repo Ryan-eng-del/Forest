@@ -11,6 +11,7 @@ import (
 	"go-gateway/model"
 	"go-gateway/public"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,19 +28,119 @@ func Register(group gin.IRoutes) {
 	group.POST("/http", service.ServiceCreateHttp)
 }
 
-// ServiceList godoc
+// ServiceCreate godoc
 // @Summary 创建 http 服务
 // @Description 创建 http 服务
 // @Tags Service
-// @ID /service
+// @ID /service/http
 // @Accept  json
 // @Produce  json
 // @security ApiKeyAuth
-// @Param body body serviceDto.ServiceAddHttp "body"
+// @Param info body serviceDto.ServiceAddHttpInput true "body"
 // @Success 200 {object} public.Response{data=string} "success"
-// @Router /service [get]
+// @Router /service/http [post]
 func (s *ServiceController) ServiceCreateHttp(c *gin.Context) {
+	params := &serviceDto.ServiceAddHttpInput{}
+	if err := params.BindValidParam(c); err != nil {
+		public.ResponseError(c, public.ResponseCode(2001), err)
+		return
+	}
+
+	if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
+		public.ResponseError(c, 2004, errors.New("IP列表与权重列表数量不一致"))
+		return
+	}
+
+	tx, err := libMysql.GetGormPool("default")
 	
+	if err != nil {
+		public.ResponseError(c, 2005, err)
+	}
+
+	tx = tx.Begin()
+
+	serviceInfo := &model.Service{ServiceName: params.ServiceName}
+	if _, err := serviceInfo.Find(c, tx, serviceInfo); err == nil {
+		tx.Rollback()
+		public.ResponseError(c, public.ResponseCode(2006), errors.New("服务已经存在"))
+		return
+	}
+
+	httpRuleInfo := &model.HttpRule{
+		RuleType: params.RuleType,
+		Rule: params.Rule,
+	}
+
+
+	if _, err := httpRuleInfo.FindMust(c, tx, httpRuleInfo); err == nil {
+		tx.Rollback()
+		public.ResponseError(c, public.ResponseCode(2007), errors.New("服务接入前缀或域名已存在"))
+		return
+	}
+
+
+	serviceModel := &model.Service{
+		ServiceName: params.ServiceName,
+		ServiceDesc: params.ServiceDesc,
+	}
+
+	if err := serviceModel.Create(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2008, err)
+		return
+	}
+
+	httpRule := &model.HttpRule{
+		ServiceInfoID:      serviceModel.ID,
+		RuleType:       params.RuleType,
+		Rule:           params.Rule,
+		NeedHttps:      params.NeedHttps,
+		NeedStripUri:   params.NeedStripUri,
+		NeedWebsocket:  params.NeedWebsocket,
+		UrlRewrite:     params.UrlRewrite,
+		HeaderTransfor: params.HeaderTransfor,
+	}
+
+	if err := httpRule.Create(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2009, err)
+		return
+	}
+
+	accessControl := &model.AccessControl{
+		ServiceInfoID:         serviceModel.ID,
+		OpenAuth:          params.OpenAuth,
+		BlackList:         params.BlackList,
+		WhiteList:         params.WhiteList,
+		ClientIPFlowLimit: params.ClientipFlowLimit,
+		ServiceFlowLimit:  params.ServiceFlowLimit,
+	}
+
+	if err := accessControl.Create(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2010, err)
+		return
+	}
+
+	loadbalance := &model.LoadBalance{
+		ServiceInfoID:              serviceModel.ID,
+		RoundType:              params.RoundType,
+		IpList:                 params.IpList,
+		WeightList:             params.WeightList,
+		UpstreamConnectTimeout: params.UpstreamConnectTimeout,
+		UpstreamHeaderTimeout:  params.UpstreamHeaderTimeout,
+		UpstreamIdleTimeout:    params.UpstreamIdleTimeout,
+		UpstreamMaxIdle:        params.UpstreamMaxIdle,
+	}
+
+	if err := loadbalance.Create(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2011, err)
+		return
+	}
+
+	tx.Commit()
+	public.ResponseSuccess(c, "创建成功")
 }
 
 
@@ -80,7 +181,13 @@ func (s *ServiceController) ServiceList(c *gin.Context) {
 
 	 outList := []serviceDto.ServiceListItemOutput{}
 	 for _, listItem := range lists {
-		serviceDetail, _ := listItem.ServiceDetail(c, tx)
+		serviceDetail, err := listItem.ServiceDetail(c, tx)
+
+		if err != nil {
+			public.ResponseError(c, public.ResponseCode(2003), err)
+			return
+		}
+
 		log := libLog.GetLogger()
 		log.Info(serviceDetail.Info.ServiceName)
 		//1、http后缀接入 clusterIP+clusterPort+path
@@ -163,7 +270,13 @@ func (s *ServiceController) ServiceDelete(c *gin.Context) {
 	}
 
 	serviceModel := &model.Service{}
-	serviceInstance, err := serviceModel.FindById(c, tx, int(serviceId))
+	serviceInstance, err := serviceModel.Find(c, tx, &model.Service{
+		AbstractModel: model.AbstractModel{
+			ID: uint(serviceId),
+		},
+		},
+	)
+
 	if err != nil {
 		public.ResponseError(c, public.ResponseCode(2002), err)
 		return

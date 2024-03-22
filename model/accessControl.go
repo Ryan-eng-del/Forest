@@ -9,9 +9,9 @@ import (
 
 type AccessControl struct {
 	ID        uint `json:"id" gorm:"primarykey;comment:自增主键"`
-	ServiceInfoID      uint  `json:"service_id" gorm:"comment:服务id"`
+	ServiceInfoID      uint  `json:"service_id" gorm:"comment:服务id;column:service_id"`
 	Service *Service `json:"service,omitempty" gorm:"foreignKey:ServiceInfoID;references:ID"`
-	OpenAuth          bool  `json:"open_auth" gorm:"column:open_auth;comment:是否开启权限 1=开启" `
+	OpenAuth          int  `json:"open_auth" gorm:"column:open_auth;comment:是否开启权限 1=开启" `
 	BlackList         string `json:"black_list" gorm:"column:black_list;type:varchar(1000);comment:黑名单ip" `
 	WhiteList         string `json:"white_list" gorm:"column:white_list;type:varchar(1000);comment:白名单ip" `
 	WhiteHostName     string `json:"white_host_name" gorm:"column:white_host_name;type:varchar(1000);comment:白名单主机	"`
@@ -30,4 +30,13 @@ func (t *AccessControl) Find(c *gin.Context, tx *gorm.DB) (*AccessControl, error
 		return nil, result
 	}
 	return t, result
+}
+
+
+func (t *AccessControl) Save(c *gin.Context, tx *gorm.DB) error {
+	return tx.WithContext(c).Save(t).Error
+}
+
+func (t *AccessControl) Create(c *gin.Context, tx *gorm.DB) error {
+	return tx.WithContext(c).Save(t).Error
 }
