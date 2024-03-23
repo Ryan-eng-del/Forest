@@ -262,7 +262,119 @@ func (s *ServiceController) ServiceUpdateTcp(c *gin.Context) {
 	public.ResponseSuccess(c, "更新成功")
 }
 
-func (s *ServiceController) ServiceCreateGrpc(c *gin.Context) {}
+// ServiceCreate godoc
+// @Summary 创建 grpc 服务
+// @Description 创建 grpc 服务
+// @Tags Service
+// @ID /service/grpc
+// @Accept  json
+// @Produce  json
+// @security ApiKeyAuth
+// @Param info body serviceDto.ServiceAddGrpcInput true "body"
+// @Success 200 {object} public.Response{data=string} "success"
+// @Router /service/grpc [post]
+func (s *ServiceController) ServiceCreateGrpc(c *gin.Context) {
+	params := &serviceDto.ServiceAddGrpcInput{}
+	if err := params.BindValidParam(c); err != nil {
+		public.ResponseError(c, public.ResponseCode(2001), err)
+		return
+	}
+
+	if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
+		public.ResponseError(c, 2004, errors.New("IP列表与权重列表数量不一致"))
+		return
+	}
+
+	tx, err := libMysql.GetGormPool("default")
+	
+	if err != nil {
+		public.ResponseError(c, 2005, err)
+	}
+
+	tcpRuleSearch := &model.TcpRule{
+		Port: params.Port,
+	}
+	if _, err := tcpRuleSearch.FindMust(c, tx, tcpRuleSearch); err == nil {
+		public.ResponseError(c, 2003, errors.New("服务端口被占用，请重新输入"))
+		return
+	}
+
+	grpcRuleSearch := &model.GrpcRule{
+		Port: params.Port,
+	}
+	if _, err := grpcRuleSearch.FindMust(c, tx, grpcRuleSearch); err == nil {
+		public.ResponseError(c, 2004, errors.New("服务端口被占用，请重新输入"))
+		return
+	}
+
+		//ip与权重数量一致
+		if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
+			public.ResponseError(c, 2005, errors.New("ip列表与权重设置不匹配"))
+			return
+		}
+
+	tx = tx.Begin()
+
+
+	info := &model.Service{
+		LoadType: libConst.LoadTypeGRPC,
+		ServiceName: params.ServiceName,
+		ServiceDesc: params.ServiceDesc,
+	}
+
+	if err := info.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2006, err)
+		return
+	}
+
+	loadBalance := &model.LoadBalance{
+		ServiceInfoID:  info.ID,
+		RoundType:  params.RoundType,
+		IpList:     params.IpList,
+		WeightList: params.WeightList,
+		ForbidList: params.ForbidList,
+	}
+
+	if err := loadBalance.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2007, err)
+		return
+	}
+
+	grpcRule := &model.GrpcRule{
+		ServiceInfoID: info.ID,
+		Port:      params.Port,
+		HeaderTransfor: params.HeaderTransfor,
+	}
+
+	if err := grpcRule.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2008, err)
+		return
+	}
+
+	accessControl := &model.AccessControl{
+		ServiceInfoID:         info.ID,
+		OpenAuth:          params.OpenAuth,
+		BlackList:         params.BlackList,
+		WhiteList:         params.WhiteList,
+		WhiteHostName:     params.WhiteHostName,
+		ClientIPFlowLimit: params.ClientIPFlowLimit,
+		ServiceFlowLimit:  params.ServiceFlowLimit,
+	}
+
+	if err := accessControl.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2009, err)
+		return
+	}
+
+	tx.Commit()
+	public.ResponseSuccess(c, "创建成功")
+}
+
+
 func (s *ServiceController) ServiceUpdateGrpc(c *gin.Context) {}
 
 // ServiceHttpUpdate godoc

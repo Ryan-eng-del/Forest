@@ -35,3 +35,8 @@ func (t *GrpcRule) FindMust(c *gin.Context, tx *gorm.DB, queryStruct *GrpcRule) 
 	result := query.Where(queryStruct).First(t).Error
 	return out, result
 }
+
+
+func (t *GrpcRule) Save(c *gin.Context, tx *gorm.DB) error {
+	return tx.WithContext(c).Save(t).Error
+}
