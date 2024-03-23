@@ -28,3 +28,10 @@ func (t *GrpcRule) Find(c *gin.Context, tx *gorm.DB) (*GrpcRule, error) {
 	}
 	return t, result
 }
+
+func (t *GrpcRule) FindMust(c *gin.Context, tx *gorm.DB, queryStruct *GrpcRule) (*GrpcRule, error) {
+	out := &GrpcRule{}
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()))
+	result := query.Where(queryStruct).First(t).Error
+	return out, result
+}

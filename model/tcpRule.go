@@ -26,3 +26,15 @@ func (t *TcpRule) Find(c *gin.Context, tx *gorm.DB) (*TcpRule, error) {
 	}
 	return t, result
 }
+
+
+func (t *TcpRule) FindMust(c *gin.Context, tx *gorm.DB, queryStruct *TcpRule) (*TcpRule, error) {
+	out := &TcpRule{}
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()))
+	result := query.Where(queryStruct).First(t).Error
+	return out, result
+}
+
+func (t *TcpRule) Save(c *gin.Context, tx *gorm.DB) error {
+	return tx.WithContext(c).Save(t).Error
+}

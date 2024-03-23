@@ -332,6 +332,58 @@
                 }
             }
         },
+        "/service/tcp": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建 tcp 服务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Service"
+                ],
+                "summary": "创建 tcp 服务",
+                "operationId": "/service/tcp",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "info",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serviceDto.ServiceAddTcpInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/public.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/service/{service_id}": {
             "get": {
                 "security": [
@@ -877,6 +929,68 @@
                     "description": "白名单ip",
                     "type": "string",
                     "example": ""
+                }
+            }
+        },
+        "serviceDto.ServiceAddTcpInput": {
+            "type": "object",
+            "required": [
+                "ip_list",
+                "port",
+                "service_desc",
+                "service_name",
+                "weight_list"
+            ],
+            "properties": {
+                "black_list": {
+                    "type": "string"
+                },
+                "clientip_flow_limit": {
+                    "type": "integer"
+                },
+                "forbid_list": {
+                    "type": "string"
+                },
+                "header_transfor": {
+                    "type": "string"
+                },
+                "ip_list": {
+                    "type": "string",
+                    "example": "127.0.0.0:81"
+                },
+                "open_auth": {
+                    "type": "integer"
+                },
+                "port": {
+                    "type": "integer",
+                    "maximum": 8999,
+                    "minimum": 8001,
+                    "example": 10234
+                },
+                "round_type": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "service_desc": {
+                    "type": "string",
+                    "example": "test_tcp_3_23_desc"
+                },
+                "service_flow_limit": {
+                    "type": "integer"
+                },
+                "service_name": {
+                    "type": "string",
+                    "example": "test_tcp_3_23"
+                },
+                "weight_list": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "white_host_name": {
+                    "type": "string"
+                },
+                "white_list": {
+                    "type": "string"
                 }
             }
         },
