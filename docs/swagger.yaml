@@ -212,6 +212,45 @@ definitions:
     - InvalidRequestErrorCode
     - CustomizeCode
     - GROUPALL_SAVE_FLOWERROR
+  serviceDto.ServiceAddGrpcInput:
+    properties:
+      black_list:
+        type: string
+      clientip_flow_limit:
+        type: integer
+      forbid_list:
+        type: string
+      header_transfor:
+        type: string
+      ip_list:
+        type: string
+      open_auth:
+        type: integer
+      port:
+        maximum: 8999
+        minimum: 8001
+        type: integer
+      round_type:
+        type: integer
+      service_desc:
+        type: string
+      service_flow_limit:
+        type: integer
+      service_name:
+        type: string
+      weight_list:
+        type: string
+      white_host_name:
+        type: string
+      white_list:
+        type: string
+    required:
+    - ip_list
+    - port
+    - service_desc
+    - service_name
+    - weight_list
+    type: object
   serviceDto.ServiceAddHttpInput:
     properties:
       black_list:
@@ -597,6 +636,71 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 服务详情
+      tags:
+      - Service
+  /service/grpc:
+    post:
+      consumes:
+      - application/json
+      description: 创建 grpc 服务
+      operationId: /service/grpc
+      parameters:
+      - description: body
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/serviceDto.ServiceAddGrpcInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 创建 grpc 服务
+      tags:
+      - Service
+  /service/grpc/{service_id}:
+    patch:
+      consumes:
+      - application/json
+      description: 更新 grpc 服务
+      operationId: /service/grpc/{service_id}
+      parameters:
+      - description: 服务id
+        in: path
+        name: service_id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/serviceDto.ServiceAddGrpcInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 更新 grpc 服务
       tags:
       - Service
   /service/http:
