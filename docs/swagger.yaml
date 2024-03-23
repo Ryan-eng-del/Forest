@@ -694,6 +694,41 @@ paths:
       summary: 创建 tcp 服务
       tags:
       - Service
+  /service/tcp/{service_id}:
+    patch:
+      consumes:
+      - application/json
+      description: 更新 tcp 服务
+      operationId: /service/tcp/{service_id}
+      parameters:
+      - description: 服务id
+        in: path
+        name: service_id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: info
+        required: true
+        schema:
+          $ref: '#/definitions/serviceDto.ServiceAddTcpInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 更新 tcp 服务
+      tags:
+      - Service
 securityDefinitions:
   ApiKeyAuth:
     in: header

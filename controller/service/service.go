@@ -16,9 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ServiceController struct {
-
-}
+type ServiceController struct {}
 
 func Register(group gin.IRoutes) {
 	service := &ServiceController{}
@@ -27,10 +25,8 @@ func Register(group gin.IRoutes) {
 	group.GET("/:serviceId", service.ServiceDetail)
 	group.POST("/http", service.ServiceCreateHttp)
 	group.PATCH("/http/:serviceId", service.ServiceHttpUpdate)
-	
 	group.POST("/tcp", service.ServiceCreateTcp)
 	group.PATCH("/tcp/:serviceId", service.ServiceUpdateTcp)
-
 	group.POST("/grpc", service.ServiceCreateGrpc)
 	group.PATCH("/grpc/:serviceId", service.ServiceUpdateGrpc)
 }
@@ -146,9 +142,125 @@ func (s *ServiceController) ServiceCreateTcp(c *gin.Context) {
 	public.ResponseSuccess(c, "创建成功")
 }
 
+// ServiceHttpUpdate godoc
+// @Summary 更新 tcp 服务
+// @Description 更新 tcp 服务
+// @Tags Service
+// @ID /service/tcp/{service_id}
+// @Accept  json
+// @Produce  json
+// @security ApiKeyAuth
+// @Param service_id path string true "服务id"
+// @Param info body serviceDto.ServiceAddTcpInput true "body"
+// @Success 200 {object} public.Response{data=string} "success"
+// @Router /service/tcp/{service_id} [patch]
+func (s *ServiceController) ServiceUpdateTcp(c *gin.Context) {
+	serviceIdStr := c.Param("serviceId")
+	serviceId, err := strconv.ParseInt(serviceIdStr, 10, 64)
 
-func (s *ServiceController) ServiceUpdateTcp(c *gin.Context) {}
+	if err != nil {
+		public.ResponseError(c, public.ResponseCode(2001), err)
+		return
+	}
 
+	params := serviceDto.ServiceAddTcpInput{}
+	if err := params.BindValidParam(c); err != nil {
+		public.ResponseError(c, 2000, err)
+		return
+	}
+
+	if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
+		public.ResponseError(c, 2001, errors.New("IP列表与权重列表数量不一致"))
+		return
+	}
+
+
+	serviceInfo := model.Service{}
+	tx, err := libMysql.GetGormPool("default")
+
+	if err != nil {
+		public.ResponseError(c, public.ResponseCode(2002), err)
+		return
+	}
+
+	tx = tx.Begin()
+	service, err := serviceInfo.Find(c, tx, &model.Service{
+		AbstractModel: model.AbstractModel{ID: uint(serviceId)},
+	})
+
+	if err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2003, errors.New("服务不存在"))
+		return
+	}
+
+	serviceDetail, err := service.ServiceDetail(c, tx)
+
+
+
+	if err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2003, errors.New("服务不存在"))
+		return
+	}
+
+	info := serviceDetail.Info
+	info.ServiceDesc = params.ServiceDesc
+
+	if err := info.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2005, err)
+		return
+	}
+
+	loadBalance := &model.LoadBalance{}
+	if serviceDetail.LoadBalance != nil {
+		loadBalance = serviceDetail.LoadBalance
+	}
+	loadBalance.ServiceInfoID = info.ID
+	loadBalance.RoundType = params.RoundType
+	loadBalance.IpList = params.IpList
+	loadBalance.WeightList = params.WeightList
+	loadBalance.ForbidList = params.ForbidList
+
+	if err := loadBalance.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2004, err)
+		return
+	}
+
+	tcpRule := &model.TcpRule{}
+	if serviceDetail.TCPRule != nil {
+		tcpRule = serviceDetail.TCPRule
+	}
+	tcpRule.ServiceInfoID = info.ID
+	tcpRule.Port = params.Port
+	if err := tcpRule.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2005, err)
+		return
+	}
+
+	accessControl := &model.AccessControl{}
+	if serviceDetail.AccessControl != nil {
+		accessControl = serviceDetail.AccessControl
+	}
+	accessControl.ServiceInfoID = info.ID
+	accessControl.OpenAuth = params.OpenAuth
+	accessControl.BlackList = params.BlackList
+	accessControl.WhiteList = params.WhiteList
+	accessControl.WhiteHostName = params.WhiteHostName
+	accessControl.ClientIPFlowLimit = params.ClientIPFlowLimit
+	accessControl.ServiceFlowLimit = params.ServiceFlowLimit
+
+	if err := accessControl.Save(c, tx); err != nil {
+		tx.Rollback()
+		public.ResponseError(c, 2006, err)
+		return
+	}
+	tx.Commit()
+	public.ResponseSuccess(c, "更新成功")
+}
 
 func (s *ServiceController) ServiceCreateGrpc(c *gin.Context) {}
 func (s *ServiceController) ServiceUpdateGrpc(c *gin.Context) {}
