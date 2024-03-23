@@ -20,6 +20,7 @@ type ServiceController struct {}
 
 func Register(group gin.IRoutes) {
 	service := &ServiceController{}
+	// todo 补充 Redis 服务统计功能
 	group.GET("", service.ServiceList)
 	group.DELETE("/:serviceId", service.ServiceDelete)
 	group.GET("/:serviceId", service.ServiceDetail)
@@ -468,7 +469,7 @@ func (s *ServiceController) ServiceUpdateGrpc(c *gin.Context) {
 
 	grpcRule.ServiceInfoID = info.ID
 	grpcRule.HeaderTransfor = params.HeaderTransfor
-	
+
 	if err := grpcRule.Save(c, tx); err != nil {
 		tx.Rollback()
 		public.ResponseError(c, 2005, err)
