@@ -30,7 +30,6 @@ func RegisterAuth(group gin.IRoutes) {
 // @ID /admin/info
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Success 200 {object} public.Response{data=adminDto.AdminInfoOutput} "success"
 // @Router /admin/info [get]
 func (a *AdminController) AdminInfo(c *gin.Context) {
@@ -64,7 +63,6 @@ func (a *AdminController) AdminInfo(c *gin.Context) {
 // @ID /admin/change_pwd
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param body body adminDto.ChangePwdInput true "body"
 // @Success 200 {object} public.Response{data=string} "success"
 // @Router /admin/change_pwd [post]

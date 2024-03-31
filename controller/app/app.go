@@ -3,12 +3,11 @@ package appController
 import (
 	"errors"
 	appDto "go-gateway/dto/app"
-	"strconv"
-
 	libFunc "go-gateway/lib/func"
 	libMysql "go-gateway/lib/mysql"
 	"go-gateway/model"
 	"go-gateway/public"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +19,7 @@ func Register (i gin.IRoutes) {
 	appController := &AppController{}
 	i.GET("", appController.AppList)
 	i.GET("/:appId", appController.AppDetail)
-	i.GET("/statics", appController.AppStatistics)
+	i.GET("/statistics", appController.AppStatistics)
 	i.DELETE("/:appId", appController.AppDelete)
 	i.PATCH("/:appId", appController.AppUpdate)
 	i.POST("", appController.AppAdd)

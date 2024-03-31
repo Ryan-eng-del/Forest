@@ -41,7 +41,6 @@ func Register(group gin.IRoutes) {
 // @ID /service/tcp
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param info body serviceDto.ServiceAddTcpInput true "body"
 // @Success 200 {object} public.Response{data=string} "success"
 // @Router /service/tcp [post]
@@ -152,7 +151,6 @@ func (s *ServiceController) ServiceCreateTcp(c *gin.Context) {
 // @ID /service/tcp/{service_id}
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param service_id path string true "服务id"
 // @Param info body serviceDto.ServiceAddTcpInput true "body"
 // @Success 200 {object} public.Response{data=string} "success"
@@ -272,7 +270,6 @@ func (s *ServiceController) ServiceUpdateTcp(c *gin.Context) {
 // @ID /service/grpc
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param info body serviceDto.ServiceAddGrpcInput true "body"
 // @Success 200 {object} public.Response{data=string} "success"
 // @Router /service/grpc [post]
@@ -384,7 +381,6 @@ func (s *ServiceController) ServiceCreateGrpc(c *gin.Context) {
 // @ID /service/grpc/{service_id}
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param service_id path string true "服务id"
 // @Param info body serviceDto.ServiceAddGrpcInput true "body"
 // @Success 200 {object} public.Response{data=string} "success"
@@ -506,7 +502,6 @@ func (s *ServiceController) ServiceUpdateGrpc(c *gin.Context) {
 // @ID /service/http/{service_id}
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param service_id path string true "服务id"
 // @Param info body serviceDto.ServiceAddHttpInput true "body"
 // @Success 200 {object} public.Response{data=string} "success"
@@ -621,7 +616,6 @@ func (s *ServiceController) ServiceHttpUpdate(c *gin.Context) {
 // @ID /service/http
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param info body serviceDto.ServiceAddHttpInput true "body"
 // @Success 200 {object} public.Response{data=string} "success"
 // @Router /service/http [post]
@@ -737,7 +731,6 @@ func (s *ServiceController) ServiceCreateHttp(c *gin.Context) {
 // @ID /service
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param info query string false "关键词"
 // @Param page_size query int true "每页个数"
 // @Param page_no query int true "当前页数"
@@ -836,7 +829,6 @@ func (s *ServiceController) ServiceList(c *gin.Context) {
 // @ID /service/{service_id}
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param service_id path string true "服务ID"
 // @Success 200 {object} public.Response{data=string} "success"
 // @Router /service/{service_id} [delete]
@@ -885,7 +877,6 @@ func (s *ServiceController) ServiceDelete(c *gin.Context) {
 // @ID /service/{service_id}
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param service_id path string true "服务id"
 // @Success 200 {object} public.Response{data=model.ServiceDetail} "success"
 // @Router /service/{service_id} [get]

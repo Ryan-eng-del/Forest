@@ -1,6 +1,7 @@
 package main
 
 import (
+	httpServer "go-gateway/httpProxy/server"
 	"go-gateway/server"
 	"os"
 	"os/signal"
@@ -61,7 +62,14 @@ func main() {
 		panic(err)
 	}
 
+
+	go func() {
+		httpServer.ServerRun()
+	}()
+	
 	server.HttpServerRun()
+
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 	<- quit
