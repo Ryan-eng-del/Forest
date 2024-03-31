@@ -1,5 +1,13 @@
 package model
 
+import (
+	appDto "go-gateway/dto/app"
+	mysqlLib "go-gateway/lib/mysql"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
+
 type App struct {
 	AbstractModel
 	AppID string `json:"app_id" gorm:"type:varchar(255)"`
@@ -12,4 +20,24 @@ type App struct {
 
 func (t *App) TableName() string {
 	return "gateway_app"
+}
+
+
+func (t *App) AppList (ctx *gin.Context, tx *gorm.DB, params *appDto.APPListInput) ([]App, int64, error){
+	var list []App
+	var count int64
+
+	query := tx.Scopes(mysqlLib.WithContextAndTable(ctx, t.TableName()), mysqlLib.LogicalObjects(),mysqlLib.IDDesc())
+
+	if params.Info != "" {
+		query = query.Where("(name like ? or app_id like ?)", "%" + params.Info + "%",  "%" + params.Info + "%")
+	}
+
+	err := query.Scopes(mysqlLib.Paginate(params.PageNo, params.PageSize)).Find(&list).Count(&count).Error;
+
+	if err != nil {
+		return nil, 0, err
+	}
+	
+	return list, count, nil
 }

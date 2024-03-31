@@ -2,6 +2,7 @@ package server
 
 import (
 	adminController "go-gateway/controller/admin"
+	appController "go-gateway/controller/app"
 	serviceController "go-gateway/controller/service"
 	_ "go-gateway/docs"
 
@@ -37,6 +38,11 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	{
 		serviceRouter := api.Group("/service").Use(mids.JWTTokenAuth())
 		serviceController.Register(serviceRouter)
+	}
+
+	{
+		serviceRouter := api.Group("/app").Use(mids.JWTTokenAuth())
+		appController.Register(serviceRouter)
 	}
 
 

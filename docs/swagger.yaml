@@ -38,6 +38,42 @@ definitions:
     required:
     - password
     type: object
+  appDto.APPListItemOutput:
+    properties:
+      app_id:
+        type: string
+      create_at:
+        type: string
+      id:
+        type: integer
+      is_delete:
+        type: integer
+      name:
+        type: string
+      qpd:
+        type: integer
+      qps:
+        type: integer
+      real_qpd:
+        type: integer
+      real_qps:
+        type: integer
+      secret:
+        type: string
+      update_at:
+        type: string
+      white_ips:
+        type: string
+    type: object
+  appDto.APPListOutput:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/appDto.APPListItemOutput'
+        type: array
+      total:
+        type: integer
+    type: object
   commonDto.TokensOutput:
     properties:
       access_token:
@@ -543,6 +579,44 @@ paths:
       summary: 管理员登陆
       tags:
       - Admin
+  /app:
+    get:
+      consumes:
+      - application/json
+      description: 租户列表
+      operationId: /app
+      parameters:
+      - description: 关键词
+        in: query
+        name: info
+        type: string
+      - description: 每页多少条
+        in: query
+        name: page_size
+        required: true
+        type: string
+      - description: 页码
+        in: query
+        name: page_no
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/appDto.APPListOutput'
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 租户列表
+      tags:
+      - App
   /service:
     get:
       consumes:

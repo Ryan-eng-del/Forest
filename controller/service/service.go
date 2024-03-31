@@ -8,6 +8,7 @@ import (
 	libLog "go-gateway/lib/log"
 	libMysql "go-gateway/lib/mysql"
 	libViper "go-gateway/lib/viper"
+
 	"go-gateway/model"
 	"go-gateway/public"
 	"strconv"
@@ -61,6 +62,7 @@ func (s *ServiceController) ServiceCreateTcp(c *gin.Context) {
 	if err != nil {
 		public.ResponseError(c, 2005, err)
 	}
+
 	serviceInfo := &model.Service{ServiceName: params.ServiceName}
 	if _, err := serviceInfo.Find(c, tx, serviceInfo); err == nil {
 		tx.Rollback()
