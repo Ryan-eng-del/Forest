@@ -1,7 +1,9 @@
 package appController
 
 import (
+	"errors"
 	appDto "go-gateway/dto/app"
+	"strconv"
 
 	libMysql "go-gateway/lib/mysql"
 	"go-gateway/model"
@@ -31,7 +33,6 @@ func Register (i gin.IRoutes) {
 // @ID /app
 // @Accept  json
 // @Produce  json
-// @security ApiKeyAuth
 // @Param info query string false "关键词"
 // @Param page_size query string true "每页多少条"
 // @Param page_no query string true "页码"
@@ -84,16 +85,94 @@ func (i *AppController) AppList(ctx *gin.Context) {
 	public.ResponseSuccess(ctx, output)
 }
 
-func (i *AppController) AppDetail(ctx *gin.Context) {
 
+
+// APPDetail godoc
+// @Summary 租户详情
+// @Description 租户详情
+// @Tags App
+// @ID /app/{app_id}/get
+// @Accept  json
+// @Produce  json
+// @Param app_id path string true "服务id"
+// @Success 200 {object} public.Response{data=model.App} "success"
+// @Router /app/{app_id} [get]
+func (i *AppController) AppDetail(ctx *gin.Context) {
+	appIdStr := ctx.Param("appId")
+	appId, err := strconv.ParseInt(appIdStr, 10, 64)
+	if err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2001), errors.New("not a valid app id"))
+		return
+	}
+
+	tx, err := libMysql.GetGormPool("default")
+
+	if err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2002), err)
+		return
+	}
+
+	search := model.App{
+		AbstractModel: model.AbstractModel{
+			ID: uint(appId),
+		},
+	}
+
+	app, err := search.Find(ctx, tx, &search)
+
+	if err != nil {
+		public.ResponseError(ctx, 2002, err)
+		return
+	}
+
+	public.ResponseSuccess(ctx, app)
 }
 
 func (i *AppController) AppStatistics(ctx *gin.Context) {
 
 }
 
-func (i *AppController) AppDelete(ctx *gin.Context) {
 
+// AppDelete godoc
+// @Summary 删除租户
+// @Description 删除租户
+// @Tags App
+// @ID /app/{app_id}/delete
+// @Accept  json
+// @Produce  json
+// @Param app_id path string true "服务id"
+// @Success 200 {object} public.Response{data=string} "success"
+// @Router /app/{app_id} [delete]
+func (i *AppController) AppDelete(ctx *gin.Context) {
+	appIdStr := ctx.Param("appId")
+	appId, err := strconv.ParseInt(appIdStr, 10, 64)
+	if err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2001), errors.New("not a valid app id"))
+		return
+	}
+
+	tx, err := libMysql.GetGormPool("default")
+
+	if err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2002), err)
+		return
+	}
+
+	search := model.App{
+		AbstractModel: model.AbstractModel{
+			ID: uint(appId),
+		},
+	}
+
+	app, err := search.Find(ctx, tx, &search)
+
+	if err != nil {
+		public.ResponseError(ctx, 2002, err)
+		return
+	}
+	app.IsDelete = 1
+	app.Save(ctx, tx)
+	public.ResponseSuccess(ctx, "删除成功")
 
 }
 

@@ -166,11 +166,6 @@ const docTemplate = `{
         },
         "/app": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "租户列表",
                 "consumes": [
                     "application/json"
@@ -218,6 +213,94 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/appDto.APPListOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/app/{app_id}": {
+            "get": {
+                "description": "租户详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "App"
+                ],
+                "summary": "租户详情",
+                "operationId": "/app/{app_id}/get",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "服务id",
+                        "name": "app_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/public.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.App"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除租户",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "App"
+                ],
+                "summary": "删除租户",
+                "operationId": "/app/{app_id}/delete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "服务id",
+                        "name": "app_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/public.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
                                         }
                                     }
                                 }
@@ -883,6 +966,41 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "white_list": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.App": {
+            "type": "object",
+            "properties": {
+                "app_id": {
+                    "type": "string"
+                },
+                "create_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDelete": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "qpd": {
+                    "type": "integer"
+                },
+                "qps": {
+                    "type": "integer"
+                },
+                "secret": {
+                    "type": "string"
+                },
+                "update_at": {
+                    "type": "string"
+                },
+                "white_ips": {
                     "type": "string"
                 }
             }

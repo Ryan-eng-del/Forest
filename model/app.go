@@ -38,6 +38,24 @@ func (t *App) AppList (ctx *gin.Context, tx *gorm.DB, params *appDto.APPListInpu
 	if err != nil {
 		return nil, 0, err
 	}
-	
+
 	return list, count, nil
+}
+
+
+func (t *App) Find(ctx *gin.Context, tx *gorm.DB, queryStruct *App) (*App,error) {
+	app := App{}
+	query := tx.Scopes(mysqlLib.WithContextAndTable(ctx, t.TableName()))
+	if err := query.Where(queryStruct).First(&app).Error; err != nil {
+		return nil, err
+	}
+	return &app, nil
+}
+
+func (t *App) Save(ctx *gin.Context, tx *gorm.DB) error {
+	query := tx.Scopes(mysqlLib.WithContextAndTable(ctx, t.TableName()))
+	if err := query.Save(t).Error; err != nil {
+		return err
+	}
+	return nil
 }

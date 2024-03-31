@@ -110,6 +110,29 @@ definitions:
       white_list:
         type: string
     type: object
+  model.App:
+    properties:
+      app_id:
+        type: string
+      create_at:
+        type: string
+      id:
+        type: integer
+      isDelete:
+        type: integer
+      name:
+        type: string
+      qpd:
+        type: integer
+      qps:
+        type: integer
+      secret:
+        type: string
+      update_at:
+        type: string
+      white_ips:
+        type: string
+    type: object
   model.GrpcRule:
     properties:
       header_transfor:
@@ -612,9 +635,60 @@ paths:
                 data:
                   $ref: '#/definitions/appDto.APPListOutput'
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 租户列表
+      tags:
+      - App
+  /app/{app_id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除租户
+      operationId: /app/{app_id}/delete
+      parameters:
+      - description: 服务id
+        in: path
+        name: app_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 删除租户
+      tags:
+      - App
+    get:
+      consumes:
+      - application/json
+      description: 租户详情
+      operationId: /app/{app_id}/get
+      parameters:
+      - description: 服务id
+        in: path
+        name: app_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.App'
+              type: object
+      summary: 租户详情
       tags:
       - App
   /service:

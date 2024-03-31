@@ -41,7 +41,7 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	}
 
 	{
-		serviceRouter := api.Group("/app").Use(mids.JWTTokenAuth())
+		serviceRouter := api.Group("/app").Use()
 		appController.Register(serviceRouter)
 	}
 
