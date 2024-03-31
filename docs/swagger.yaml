@@ -38,6 +38,24 @@ definitions:
     required:
     - password
     type: object
+  appDto.APPAddHttpInput:
+    properties:
+      app_id:
+        type: string
+      name:
+        type: string
+      qpd:
+        type: integer
+      qps:
+        type: integer
+      secret:
+        type: string
+      white_ips:
+        type: string
+    required:
+    - app_id
+    - name
+    type: object
   appDto.APPListItemOutput:
     properties:
       app_id:
@@ -638,6 +656,33 @@ paths:
       summary: 租户列表
       tags:
       - App
+    post:
+      consumes:
+      - application/json
+      description: 租户添加
+      operationId: /app/ post
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/appDto.APPAddHttpInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 租户添加
+      tags:
+      - App
   /app/{app_id}:
     delete:
       consumes:
@@ -689,6 +734,38 @@ paths:
                   $ref: '#/definitions/model.App'
               type: object
       summary: 租户详情
+      tags:
+      - App
+    patch:
+      consumes:
+      - application/json
+      description: 租户更新
+      operationId: /app/app_update
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/appDto.APPAddHttpInput'
+      - description: app id
+        in: path
+        name: app_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 租户更新
       tags:
       - App
   /service:

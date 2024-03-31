@@ -5,6 +5,7 @@ import (
 	appDto "go-gateway/dto/app"
 	"strconv"
 
+	libFunc "go-gateway/lib/func"
 	libMysql "go-gateway/lib/mysql"
 	"go-gateway/model"
 	"go-gateway/public"
@@ -177,10 +178,120 @@ func (i *AppController) AppDelete(ctx *gin.Context) {
 }
 
 
+// AppAdd godoc
+// @Summary 租户添加
+// @Description 租户添加
+// @Tags App
+// @ID /app/ post
+// @Accept  json
+// @Produce  json
+// @Param body body appDto.APPAddHttpInput true "body"
+// @Success 200 {object} public.Response{data=string} "success"
+// @Router /app [post]
 func (i *AppController) AppAdd(ctx *gin.Context) {
+	params := appDto.APPAddHttpInput{}
+	if err := params.GetValidParams(ctx); err != nil {
+		public.ResponseError(ctx, 2001, err)
+	}
 
+
+	tx, err := libMysql.GetGormPool("default")
+
+	if err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2002), err)
+		return
+	}
+
+	search := model.App{
+		AppID: params.AppID,
+	}
+
+	_, err = search.Find(ctx, tx, &search)
+
+	if err == nil {
+		public.ResponseError(ctx, public.ResponseCode(2003), errors.New("租户ID被占用，请重新输入"))
+		return
+	}
+
+	if params.Secret == "" {
+		params.Secret = libFunc.MD5(params.AppID)
+	}
+
+	info := &model.App{
+		AppID:    params.AppID,
+		Name:     params.Name,
+		Secret:   params.Secret,
+		WhiteIps: params.WhiteIPS,
+		Qps:      uint(params.Qps),
+		Qpd:      uint(params.Qpd),
+	}
+
+	if err := info.Save(ctx, tx); err != nil {
+		public.ResponseError(ctx, 2003, err)
+		return
+	}
+
+	public.ResponseSuccess(ctx, "添加成功")
 }
 
+// AppUpdate godoc
+// @Summary 租户更新
+// @Description 租户更新
+// @Tags App
+// @ID /app/app_update
+// @Accept  json
+// @Produce  json
+// @Param body body appDto.APPAddHttpInput true "body"
+// @Param app_id path string true "app id"
+// @Success 200 {object} public.Response{data=string} "success"
+// @Router /app/{app_id} [patch]
 func (i *AppController) AppUpdate(ctx *gin.Context) {
+	appIdStr := ctx.Param("appId")
+	appId, err := strconv.ParseInt(appIdStr, 10, 64)
+	if err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2001), errors.New("not a valid app id"))
+		return
+	}
 
+	params := appDto.APPAddHttpInput{}
+	if err := params.GetValidParams(ctx); err != nil {
+		public.ResponseError(ctx, 2001, err)
+	}
+
+
+	tx, err := libMysql.GetGormPool("default")
+
+	if err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2002), err)
+		return
+	}
+
+	search := model.App{
+		AbstractModel: model.AbstractModel{
+			ID: uint(appId),
+		},
+	}
+
+	info, err := search.Find(ctx, tx, &search)
+	if err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2003), err)
+		return
+	}
+
+	if params.Secret == "" {
+		params.Secret = libFunc.MD5(info.AppID)
+	}
+
+	info.Name = params.Name
+	info.Secret = params.Secret
+	info.WhiteIps = params.WhiteIPS
+	info.Qps = uint(params.Qps)
+	info.Qpd = uint(params.Qpd)
+
+	if err := info.Save(ctx, tx); err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2003), err)
+		return
+	}
+	
+	public.ResponseSuccess(ctx, "更新成功")
 }

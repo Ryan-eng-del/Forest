@@ -45,7 +45,7 @@ func (t *App) AppList (ctx *gin.Context, tx *gorm.DB, params *appDto.APPListInpu
 
 func (t *App) Find(ctx *gin.Context, tx *gorm.DB, queryStruct *App) (*App,error) {
 	app := App{}
-	query := tx.Scopes(mysqlLib.WithContextAndTable(ctx, t.TableName()))
+	query := tx.Scopes(mysqlLib.WithContextAndTable(ctx, t.TableName()), mysqlLib.LogicalObjects())
 	if err := query.Where(queryStruct).First(&app).Error; err != nil {
 		return nil, err
 	}

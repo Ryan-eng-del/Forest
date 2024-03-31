@@ -1,0 +1,63 @@
+[INFO ][2024-03-31T19:18:36.330][trace.go:70] _com_request_in||cspanid=||from=::1||traceid=c0a802056609468c60188a0afb0e77b0||body={
+  "app_id": "string",
+  "name": "string",
+  "qpd": 0,
+  "qps": 0,
+  "secret": "",
+  "white_ips": "string"
+}||spanid=a6a144894d7e8323||uri=/api/app/33||method=PATCH||args=map[]
+[INFO ][2024-03-31T19:18:36.330][trace.go:70] _com_mysql_success||spanid=a6a144894d7e8323||sql=SELECT * FROM `gateway_app` WHERE `gateway_app`.`id` = 33 ORDER BY `gateway_app`.`id` LIMIT 1||traceid=c0a802056609468c60188a0afb0e77b0||cspanid=||current_time=2024-03-31 19:18:36||FileWithLineNum=/Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/model/app.go:49||rows=1||proc_time=40
+[INFO ][2024-03-31T19:18:36.330][trace.go:70] _com_mysql_success||FileWithLineNum=/Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/model/app.go:57||sql=UPDATE `gateway_app` SET `create_at`='2020-04-15 22:02:23',`update_at`='2024-03-31 19:18:36.376',`is_delete`=1,`app_id`='app_id',`name`='string',`secret`='f382adfe6c68d1ae672aab6b874274d1',`white_ips`='string',`qpd`=0,`qps`=0 WHERE `id` = 33||current_time=2024-03-31 19:18:36||spanid=a6a144894d7e8323||rows=1||proc_time=22||traceid=c0a802056609468c60188a0afb0e77b0||cspanid=
+[INFO ][2024-03-31T19:18:36.330][trace.go:70] _com_request_out||method=PATCH||args=map[]||response={"errno":0,"errmsg":"","data":"更新成功","trace_id":"c0a802056609468c60188a0afb0e77b0","stack":null}||proc_time=0.066075||traceid=c0a802056609468c60188a0afb0e77b0||cspanid=||spanid=a6a144894d7e8323||uri=/api/app/33||from=::1
+[INFO ][2024-03-31T19:19:05.400][trace.go:70] _com_request_in||body={
+  "app_id": "string",
+  "name": "string",
+  "qpd": 0,
+  "qps": 0,
+  "secret": "",
+  "white_ips": "string"
+}||traceid=c0a80205660946a906988ce6499be7b0||spanid=a6a144ac3b638f0e||uri=/api/app/33||method=PATCH||cspanid=||args=map[]||from=::1
+[INFO ][2024-03-31T19:19:05.400][trace.go:70] _com_mysql_success||sql=SELECT * FROM `gateway_app` WHERE `gateway_app`.`id` = 33 AND is_delete = 0 ORDER BY `gateway_app`.`id` LIMIT 1||proc_time=13||current_time=2024-03-31 19:19:05||traceid=c0a80205660946a906988ce6499be7b0||FileWithLineNum=/Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/model/app.go:49||rows=0||cspanid=||spanid=a6a144ac3b638f0e
+[INFO ][2024-03-31T19:19:05.400][trace.go:70] _com_request_out||args=map[]||from=::1||spanid=a6a144ac3b638f0e||uri=/api/app/33||method=PATCH||response={"errno":2003,"errmsg":"record not found","data":"","trace_id":"c0a80205660946a906988ce6499be7b0","stack":"record not found"}||proc_time=0.020485833||traceid=c0a80205660946a906988ce6499be7b0||cspanid=
+[INFO ][2024-03-31T19:19:08.317][trace.go:70] _com_request_in||method=PATCH||from=::1||cspanid=||spanid=a6a144a92e446b18||uri=/api/app/33||body={
+  "app_id": "string",
+  "name": "string",
+  "qpd": 0,
+  "qps": 0,
+  "secret": "",
+  "white_ips": "string"
+}||traceid=c0a80205660946ac58788ce656fc03b0||args=map[]
+[INFO ][2024-03-31T19:19:08.317][trace.go:70] _com_mysql_success||sql=SELECT * FROM `gateway_app` WHERE `gateway_app`.`id` = 33 AND is_delete = 0 ORDER BY `gateway_app`.`id` LIMIT 1||current_time=2024-03-31 19:19:08||cspanid=||spanid=a6a144a92e446b18||FileWithLineNum=/Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/model/app.go:49||rows=0||proc_time=6||traceid=c0a80205660946ac58788ce656fc03b0
+[INFO ][2024-03-31T19:19:08.317][trace.go:70] _com_request_out||proc_time=0.007691125||traceid=c0a80205660946ac58788ce656fc03b0||cspanid=||args=map[]||response={"errno":2003,"errmsg":"record not found","data":"","trace_id":"c0a80205660946ac58788ce656fc03b0","stack":"record not found"}||from=::1||spanid=a6a144a92e446b18||uri=/api/app/33||method=PATCH
+[INFO ][2024-03-31T19:19:13.814][trace.go:70] _com_request_in||cspanid=||uri=/api/app/33||body={
+  "app_id": "string",
+  "name": "string",
+  "qpd": 0,
+  "qps": 0,
+  "secret": "",
+  "white_ips": "string"
+}||traceid=c0a80205660946b1a1708ce6f13fcab0||method=PATCH||args=map[]||from=::1||spanid=a6a144b4647a4222
+[INFO ][2024-03-31T19:19:13.814][trace.go:70] _com_mysql_success||proc_time=4||traceid=c0a80205660946b1a1708ce6f13fcab0||cspanid=||spanid=a6a144b4647a4222||FileWithLineNum=/Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/model/app.go:49||sql=SELECT * FROM `gateway_app` WHERE `gateway_app`.`id` = 33 AND is_delete = 0 ORDER BY `gateway_app`.`id` LIMIT 1||rows=1||current_time=2024-03-31 19:19:13
+[INFO ][2024-03-31T19:19:13.814][trace.go:70] _com_mysql_success||current_time=2024-03-31 19:19:13||traceid=c0a80205660946b1a1708ce6f13fcab0||FileWithLineNum=/Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/model/app.go:57||sql=UPDATE `gateway_app` SET `create_at`='2020-04-15 22:02:23',`update_at`='2024-03-31 19:19:13.82',`is_delete`=0,`app_id`='app_id',`name`='string',`secret`='f382adfe6c68d1ae672aab6b874274d1',`white_ips`='string',`qpd`=0,`qps`=0 WHERE `id` = 33||rows=1||proc_time=7||cspanid=||spanid=a6a144b4647a4222
+[INFO ][2024-03-31T19:19:13.814][trace.go:70] _com_request_out||method=PATCH||response={"errno":0,"errmsg":"","data":"更新成功","trace_id":"c0a80205660946b1a1708ce6f13fcab0","stack":null}||traceid=c0a80205660946b1a1708ce6f13fcab0||spanid=a6a144b4647a4222||uri=/api/app/33||args=map[]||from=::1||proc_time=0.012516875||cspanid=
+[INFO ][2024-03-31T19:26:12.170][trace.go:70] _com_request_in||cspanid=||spanid=a6a14a511898d316||uri=/api/app||body={
+  "app_id": "string",
+  "name": "string",
+  "qpd": 0,
+  "qps": 0,
+  "secret": "string",
+  "white_ips": "string"
+}||traceid=c0a8020566094854c120ae6900765fb0||method=POST||args=map[]||from=::1
+[INFO ][2024-03-31T19:26:12.170][trace.go:70] _com_mysql_success||FileWithLineNum=/Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/model/app.go:49||proc_time=7||current_time=2024-03-31 19:26:12||traceid=c0a8020566094854c120ae6900765fb0||spanid=a6a14a511898d316||sql=SELECT * FROM `gateway_app` WHERE `gateway_app`.`app_id` = 'string' AND is_delete = 0 ORDER BY `gateway_app`.`id` LIMIT 1||rows=0||cspanid=
+[INFO ][2024-03-31T19:26:12.170][trace.go:70] _com_mysql_success||cspanid=||proc_time=19||current_time=2024-03-31 19:26:12||rows=1||traceid=c0a8020566094854c120ae6900765fb0||spanid=a6a14a511898d316||FileWithLineNum=/Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/model/app.go:57||sql=INSERT INTO `gateway_app` (`create_at`,`update_at`,`is_delete`,`app_id`,`name`,`secret`,`white_ips`,`qpd`,`qps`) VALUES ('2024-03-31 19:26:12.181','2024-03-31 19:26:12.181',0,'string','string','string','string',0,0)
+[INFO ][2024-03-31T19:26:12.170][trace.go:70] _com_request_out||uri=/api/app||method=POST||args=map[]||from=::1||cspanid=||response={"errno":0,"errmsg":"","data":"添加成功","trace_id":"c0a8020566094854c120ae6900765fb0","stack":null}||proc_time=0.02983525||traceid=c0a8020566094854c120ae6900765fb0||spanid=a6a14a511898d316
+[INFO ][2024-03-31T19:26:18.724][trace.go:70] _com_request_in||spanid=a6a14a5f76aa3238||method=POST||args=map[]||cspanid=||traceid=c0a802056609485a8dc8ae696907e4b0||uri=/api/app||body={
+  "app_id": "string",
+  "name": "string",
+  "qpd": 0,
+  "qps": 0,
+  "secret": "string",
+  "white_ips": "string"
+}||from=::1
+[INFO ][2024-03-31T19:26:18.724][trace.go:70] _com_mysql_success||spanid=a6a14a5f76aa3238||FileWithLineNum=/Users/max/Documents/coding/Backend/Golang/Personal/Go-Gateway/model/app.go:49||sql=SELECT * FROM `gateway_app` WHERE `gateway_app`.`app_id` = 'string' AND is_delete = 0 ORDER BY `gateway_app`.`id` LIMIT 1||rows=1||cspanid=||proc_time=24||current_time=2024-03-31 19:26:18||traceid=c0a802056609485a8dc8ae696907e4b0
+[INFO ][2024-03-31T19:26:18.724][trace.go:70] _com_request_out||proc_time=0.025249416||traceid=c0a802056609485a8dc8ae696907e4b0||spanid=a6a14a5f76aa3238||uri=/api/app||method=POST||from=::1||args=map[]||response={"errno":2003,"errmsg":"租户ID被占用，请重新输入","data":"","trace_id":"c0a802056609485a8dc8ae696907e4b0","stack":"租户ID被占用，请重新输入"}||cspanid=

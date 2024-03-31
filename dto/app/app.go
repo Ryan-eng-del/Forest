@@ -50,3 +50,17 @@ type APPListInput struct {
 func (params *APPListInput) GetValidParams(c *gin.Context) error {
 	return lib.ValidateParams(c, params)
 }
+
+type APPUpdateHttpInput struct {
+	ID       int64  `json:"id" form:"id" gorm:"column:id" comment:"主键ID" validate:"required"`
+	AppID    string `json:"app_id" form:"app_id" gorm:"column:app_id" comment:"租户id" validate:""`
+	Name     string `json:"name" form:"name" gorm:"column:name" comment:"租户名称" validate:"required"`
+	Secret   string `json:"secret" form:"secret" gorm:"column:secret" comment:"密钥" validate:"required"`
+	WhiteIPS string `json:"white_ips" form:"white_ips" gorm:"column:white_ips" comment:"ip白名单，支持前缀匹配		"`
+	Qpd      int64  `json:"qpd" form:"qpd" gorm:"column:qpd" comment:"日请求量限制"`
+	Qps      int64  `json:"qps" form:"qps" gorm:"column:qps" comment:"每秒请求量限制"`
+}
+
+func (params *APPUpdateHttpInput) GetValidParams(c *gin.Context) error {
+	return lib.ValidateParams(c, params)
+}
