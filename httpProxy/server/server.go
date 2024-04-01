@@ -1,4 +1,4 @@
-package httpServer
+package httpProxyServer
 
 import (
 	router "go-gateway/httpProxy/router"

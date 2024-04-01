@@ -1,12 +1,15 @@
 package handler
 
 import (
+	"errors"
 	serviceDto "go-gateway/dto/service"
 	lib "go-gateway/lib/conf"
+	libConst "go-gateway/lib/const"
 	libLog "go-gateway/lib/log"
 	libMysql "go-gateway/lib/mysql"
 	"go-gateway/model"
 	"net/http/httptest"
+	"strings"
 	"sync"
 	"time"
 
@@ -119,6 +122,30 @@ func (m *ServiceManager) LoadService() *ServiceManager {
 	}
 	
 	return m
+}
+
+func (s *ServiceManager) HTTPAccessMode(c *gin.Context) (*model.ServiceDetail, error){
+	path := c.Request.URL.Path
+	host := c.Request.Host
+	host = host[0:strings.Index(host, ":")]
+
+	for _, service := range s.ServiceSlice {
+		if service.Info.LoadType != libConst.LoadTypeHTTP {
+			continue
+		}
+
+		if service.HTTPRule.RuleType == libConst.HTTPRuleTypeDomain {
+			if service.HTTPRule.Rule == host {
+				return service, nil
+			}
+		}
+		if service.HTTPRule.RuleType == libConst.HTTPRuleTypePrefixURL {
+			if strings.HasPrefix(path, service.HTTPRule.Rule) {
+				return service, nil
+			}
+		}
+	}
+	return nil, errors.New("not matched services")
 }
 
 func (s *ServiceManager) LoadAndWatch() error {

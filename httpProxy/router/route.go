@@ -24,6 +24,9 @@ func InitRouter(mids ...gin.HandlerFunc) *gin.Engine {
 	}
 
 
-	router.Use(httpMiddlewares.JWTTokenAuth())
+	router.Use(
+		httpMiddlewares.HTTPAccessModeMiddleware(),
+		httpMiddlewares.JWTTokenAuth(),
+	)
 	return router
 }

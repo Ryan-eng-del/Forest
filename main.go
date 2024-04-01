@@ -2,7 +2,7 @@ package main
 
 import (
 	"go-gateway/httpProxy/handler"
-	httpServer "go-gateway/httpProxy/server"
+	httpProxyServer "go-gateway/httpProxy/server"
 	"go-gateway/server"
 	"os"
 	"os/signal"
@@ -65,13 +65,13 @@ func main() {
 
 	handler.AppManagerHandler.LoadAndWatch()
 	handler.ServiceManagerHandler.LoadAndWatch()
-	
+
 	go func () {
 		server.HttpServerRun()
 	}()
 
 	go func() {
-		httpServer.ServerRun()
+		httpProxyServer.ServerRun()
 	}()
 
 	quit := make(chan os.Signal, 1)
