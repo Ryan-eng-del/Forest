@@ -13,6 +13,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var ServiceManagerHandler *ServiceManager = NewServiceManager()
+
 //通知事件
 type ServiceEvent struct {
 	DeleteService []*model.ServiceDetail

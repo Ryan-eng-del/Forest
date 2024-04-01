@@ -13,6 +13,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
+var AppManagerHandler *AppManager =  NewAppManager()
+
 //通知事件
 type AppEvent struct {
 	DeleteApp []*model.App
