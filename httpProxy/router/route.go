@@ -9,7 +9,7 @@ import (
 )
 
 func InitRouter(mids ...gin.HandlerFunc) *gin.Engine {
-	router := gin.Default()
+	router := gin.New()
 	router.Use(mids...)
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -23,7 +23,7 @@ func InitRouter(mids ...gin.HandlerFunc) *gin.Engine {
 		oauthController.Register(oauth)
 	}
 
-	
+
 	router.Use(httpMiddlewares.JWTTokenAuth())
 	return router
 }

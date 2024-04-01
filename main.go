@@ -62,13 +62,13 @@ func main() {
 		panic(err)
 	}
 
+	go func () {
+		server.HttpServerRun()
+	}()
 
 	go func() {
 		httpServer.ServerRun()
 	}()
-	
-	server.HttpServerRun()
-
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
