@@ -1,7 +1,7 @@
 package httpMiddlewares
 
 import (
-	"go-gateway/httpProxy/handler"
+	"go-gateway/handler"
 	"go-gateway/public"
 
 	"github.com/gin-gonic/gin"

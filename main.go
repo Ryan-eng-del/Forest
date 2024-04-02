@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-gateway/httpProxy/handler"
+	"go-gateway/handler"
 	httpProxyServer "go-gateway/httpProxy/server"
 	"go-gateway/server"
 	"os"
@@ -65,7 +65,7 @@ func main() {
 
 	handler.AppManagerHandler.LoadAndWatch()
 	handler.ServiceManagerHandler.LoadAndWatch()
-
+	
 	go func () {
 		server.HttpServerRun()
 	}()

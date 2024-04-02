@@ -81,3 +81,20 @@ func GetRedisPoll (pollName string) (*redis.Client, error) {
 		return nil, errors.New("not found in RedisMapPoll")
 	}
 }
+
+
+func RedisConfPipline(pip ...func(c *redis.Client) error) error {
+	c, err := GetRedisPoll("default")
+	if err != nil {
+		return err
+	}
+	defer c.Close()
+	for _, f := range pip {
+		f(c)
+	}
+
+	return nil
+}
+
+
+

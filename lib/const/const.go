@@ -21,6 +21,9 @@ const (
 
 	JwtSignKey = "my_sign_key"
 	JwtExpires = 60*60
+
+	//middleware context key
+	ServiceDetailContextKey = "service"
 )
 
 var (
