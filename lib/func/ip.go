@@ -70,3 +70,33 @@ func calcTraceId(ip string) (traceId string) {
 	return b.String()
 }
 
+
+func InIPSliceStr(targetIP string, ipSliceStr []string) bool {
+	if targetIP == "" || len(ipSliceStr) == 0 {
+		return false
+	}
+	for _, ipSliceNode := range ipSliceStr {
+		ip := net.ParseIP(ipSliceNode)
+		if ip != nil {
+			// ip
+			if targetIP == ip.String() {
+				return true
+			}
+		} else {
+			// mask
+			_, mask, err := net.ParseCIDR(ipSliceNode)
+			if err != nil {
+				fmt.Println("ParseCIDR error: ", err)
+				continue
+			}
+
+			if mask.Contains(net.ParseIP(targetIP)) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+
+
