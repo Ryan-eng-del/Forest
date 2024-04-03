@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS `gateway_service_access_control` (
   `white_host_name` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '白名单主机',
   `clientip_flow_limit` int(11) NOT NULL COMMENT '客户端ip限流',
   `service_flow_limit` int(20) NOT NULL COMMENT '服务端限流',
+  `service_flow_type` int(20) NOT NULL COMMENT '服务端限流类型',
+  `client_flow_type` int(20) NOT NULL COMMENT '客户端限流类型',
   PRIMARY KEY (`id`),
   KEY `fk_access_control_service` (`service_id`),
   CONSTRAINT `fk_access_control_service` FOREIGN KEY (`service_id`) REFERENCES `gateway_service_info` (`id`)

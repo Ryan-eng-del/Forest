@@ -17,6 +17,8 @@ type AccessControl struct {
 	WhiteHostName     string `json:"white_host_name" gorm:"column:white_host_name;type:varchar(1000);comment:白名单主机	"`
 	ClientIPFlowLimit int  `json:"clientip_flow_limit" gorm:"column:clientip_flow_limit;comment:客户端ip限流" `
 	ServiceFlowLimit  int  `json:"service_flow_limit" gorm:"column:service_flow_limit;comment:服务端限流" `
+	ServiceFlowType int `json:"service_flow_type" gorm:"column:service_flow_type;comment:服务端限流类型"`
+	ClientFlowType int `json:"client_flow_type" gorm:"column:client_flow_type;comment:客户端限流类型"`
 }
 
 func (t *AccessControl) TableName() string {
