@@ -2,6 +2,7 @@ package httpRouter
 
 import (
 	oauthController "go-gateway/controller/oauth"
+
 	httpMiddlewares "go-gateway/httpProxy/middlewares"
 	"go-gateway/middlewares"
 
@@ -26,11 +27,15 @@ func InitRouter(mids ...gin.HandlerFunc) *gin.Engine {
 
 	router.Use(
 		httpMiddlewares.HTTPAccessModeMiddleware(),
-		httpMiddlewares.JWTTokenAuth(),
 		httpMiddlewares.HTTPFlowCountMiddleware(),
 		httpMiddlewares.HttpFlowLimitMiddleware(),
+		httpMiddlewares.HTTPWhiteListMiddleware(),
 		httpMiddlewares.HTTPBlackListMiddleware(),
-		
+		httpMiddlewares.HttpAuthTokenMiddleware(),
+
+
+
+
 	)
 	return router
 }

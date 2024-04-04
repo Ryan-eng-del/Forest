@@ -12,7 +12,7 @@ import (
 )
 
 
-func HttpAuthMiddlewareMiddleware() gin.HandlerFunc {
+func HttpAuthTokenMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		serviceDetail, err := model.GetServiceDetailFromGinContext(c)
 		if err != nil {

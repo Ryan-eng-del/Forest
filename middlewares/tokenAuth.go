@@ -1,4 +1,4 @@
-package httpMiddlewares
+package middlewares
 
 import (
 	"errors"
