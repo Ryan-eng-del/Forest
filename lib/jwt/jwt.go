@@ -29,6 +29,10 @@ type CustomClaims struct {
 	jwt.RegisteredClaims
 }
 
+type AppClaims struct {
+	AppId string
+	jwt.RegisteredClaims
+}
 
 func NewJWT() (*JWT) {
 	if JWTInstance == nil {
@@ -37,8 +41,22 @@ func NewJWT() (*JWT) {
 			ExpirePeriod: lib.TokenExpirePeriod,
 		}
 	}
-
 	return JWTInstance
+}
+
+
+func (j *JWT) GenerateTokenWithAppID(appId string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, AppClaims{
+		AppId: appId,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(j.ExpirePeriod)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:    "go-gateway/2024/3/16",
+			Subject:   "token generated",
+		},
+	})
+	return token.SignedString(j.SignKey)
 }
 
 
@@ -68,6 +86,26 @@ func (j *JWT) ParseJWT(tokenStr string) (*CustomClaims, error) {
 
 	if token != nil {
 		if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
+			return claims, nil
+		}
+
+	}
+	return nil, ErrTokenInvalid
+}
+
+
+
+func (j *JWT) ParseAppJWT(tokenStr string) (*AppClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &AppClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return j.SignKey, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if token != nil {
+		if claims, ok := token.Claims.(*AppClaims); ok && token.Valid {
 			return claims, nil
 		}
 
