@@ -32,9 +32,11 @@ func InitRouter(mids ...gin.HandlerFunc) *gin.Engine {
 		httpMiddlewares.HTTPWhiteListMiddleware(),
 		httpMiddlewares.HTTPBlackListMiddleware(),
 		httpMiddlewares.HttpAuthTokenMiddleware(),
+		httpMiddlewares.HTTPJwtFlowCountMiddleware(),
+		httpMiddlewares.HTTPJwtFlowLimitMiddleware(),
+		httpMiddlewares.HTTPHeaderTransferMiddleware(),
 
-
-
+		
 
 	)
 	return router
