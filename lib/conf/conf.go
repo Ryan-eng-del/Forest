@@ -26,8 +26,10 @@ var ZooKeeperConfInstance = &ZooKeeperMapConf{}
 
 
 type ZooKeeperMapConf struct {
-	Server    []string   `mapstructure:"server"`
-	PathPrefix string `mapstructure:"path_prefix"`
+	Zookeeper struct {
+		Server    []string   `mapstructure:"server"`
+		PathPrefix string `mapstructure:"path_prefix"`
+	} `mapstructure:"zookeeper"`
 }
 
 type LogConfFileWriter struct {

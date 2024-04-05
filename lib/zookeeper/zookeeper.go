@@ -21,6 +21,7 @@ type ZkManager struct {
 }
 
 func (z *ZkManager) ParseConfig() error {
+	log.Println(z.ConfPath)
 	return  lib.ParseConfigFromFile(z.ConfPath, libConf.ZooKeeperConfInstance)
 }
 
@@ -30,19 +31,18 @@ func (z *ZkManager) SetPath(fileName string, ConfEnvPath string)  {
 }
 
 
-
 func  (z *ZkManager) InitConf () error {
 	if err := z.ParseConfig(); err != nil {
 		log.Println(err)
 		return err
 	}
 
-	if len(libConf.ZooKeeperConfInstance.Server) == 0 || libConf.ZooKeeperConfInstance.PathPrefix == "" {
+	if len(libConf.ZooKeeperConfInstance.Zookeeper.Server) == 0 || libConf.ZooKeeperConfInstance.Zookeeper.PathPrefix == "" {
 		return errors.New("ZooKeeper configuration not specified")
 	}
 
-	ZkManageInstance.hosts = libConf.ZooKeeperConfInstance.Server
-	ZkManageInstance.pathPrefix = libConf.ZooKeeperConfInstance.PathPrefix 
+	ZkManageInstance.hosts = libConf.ZooKeeperConfInstance.Zookeeper.Server
+	ZkManageInstance.pathPrefix = libConf.ZooKeeperConfInstance.Zookeeper.PathPrefix 
 
 	conn, event, err := zk.Connect(z.hosts, 5 * time.Second)
 	if err != nil {
