@@ -9,7 +9,7 @@ import (
 	"os/signal"
 )
 
-
+ 
 type Server struct{
 	Addr string `json:"addr"`
 }

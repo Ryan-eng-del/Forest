@@ -35,9 +35,8 @@ func InitRouter(mids ...gin.HandlerFunc) *gin.Engine {
 		httpMiddlewares.HTTPJwtFlowCountMiddleware(),
 		httpMiddlewares.HTTPJwtFlowLimitMiddleware(),
 		httpMiddlewares.HTTPHeaderTransferMiddleware(),
-
-		
-
+		httpMiddlewares.HTTPStripUriMiddleware(),
+		httpMiddlewares.HTTPUrlRewriteMiddleware(),
 	)
 	return router
 }

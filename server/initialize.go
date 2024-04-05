@@ -10,6 +10,7 @@ import (
 	mysqlLib "go-gateway/lib/mysql"
 	redisLib "go-gateway/lib/redis"
 	viperLib "go-gateway/lib/viper"
+	zooKeeperLib "go-gateway/lib/zookeeper"
 	"log"
 	"os"
 	"time"
@@ -25,6 +26,7 @@ const (
 	BaseConfName = "base"
 	MysqlConfName = "mysql"
 	RedisConfName = "redis"
+	ZookeeperConfName= "zookeeper"
 )
 
 func Migrate() {
@@ -42,12 +44,10 @@ func Migrate() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-
 }
 
 func InitModule(configPath string) error{
-	return initModule(configPath, []string{"base", "mysql", "redis"})
+	return initModule(configPath, []string{"base", "mysql", "redis", "zookeeper"})
 }
 
 func initModule(configPath string, modules []string) error {
@@ -109,6 +109,15 @@ func initModule(configPath string, modules []string) error {
 			return fmt.Errorf("[ERROR] %s%s", time.Now().Format(confLib.TimeFormat), " InitRedisConf:"+err.Error())
 		}
 	}
+
+		// 读取配置初始化缓存模块 (zookeeper)
+		if lib.IsInArrayString(ZookeeperConfName, modules) {
+			zooKeeperLib.ZkManageInstance = &zooKeeperLib.ZkManager{}
+			zooKeeperLib.ZkManageInstance.SetPath(ZookeeperConfName, viperLib.ViperInstance.ConfEnvPath)
+			if err := zooKeeperLib.ZkManageInstance.InitConf(); err != nil {
+				return fmt.Errorf("[ERROR] %s%s", time.Now().Format(confLib.TimeFormat), " InitZookeeperConf:"+err.Error())
+			}
+		}
 
 	if location, err := time.LoadLocation(confLib.BaseConfInstance.TimeLocation); err != nil {
 		confLib.TimeLocation = location

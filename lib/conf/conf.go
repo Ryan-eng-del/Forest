@@ -22,9 +22,13 @@ var TimeLocation *time.Location
 var BaseConfInstance = &BaseConf{}
 var MysqlConfInstance = &MysqlMapConf{}
 var RedisConfInstance = &RedisMapConf{}
+var ZooKeeperConfInstance = &ZooKeeperMapConf{}
 
 
-
+type ZooKeeperMapConf struct {
+	Server    []string   `mapstructure:"server"`
+	PathPrefix string `mapstructure:"path_prefix"`
+}
 
 type LogConfFileWriter struct {
 	On              bool   `mapstructure:"on"`
