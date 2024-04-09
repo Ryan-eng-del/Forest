@@ -8,7 +8,8 @@ import (
 	"sync"
 )
 
-
+// 增加虚拟节点 replicas 保证如果去掉一个节点，那么压力会均匀的分散在其他节点上
+// 将客户端请求的 ip hash 后选择顺时针方向 离他最近的服务器节点
 type Hash func(data []byte) uint32
 
 type UInt32Slice []uint32
