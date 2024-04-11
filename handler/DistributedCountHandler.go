@@ -86,7 +86,7 @@ func NewDistributedCountService(name string, interval time.Duration) *Distribute
 
 					totalCount, err := reqCounter.GetDayData(currentTime);
 
-					if err != nil {
+					if err != nil && err.Error() != "redis: nil" {
 						log.Error("Failed to get day data %s", err)
 						continue
 					}

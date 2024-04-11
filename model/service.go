@@ -21,9 +21,9 @@ type Service struct {
 
 func (t *Service) GroupByLoadType(c *gin.Context, tx *gorm.DB) ([]dashboardDto.DashServiceStatItemOutput, error) {
 	list := []dashboardDto.DashServiceStatItemOutput{}
-	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()), mysqlLib.LogicalObjects(),mysqlLib.IDDesc())
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()), mysqlLib.LogicalObjects())
 
-	if err := query.Table(t.TableName()).Select("load_type, count(*) as value").Group("load_type").Scan(&list).Error; err != nil {
+	if err := query.Select("load_type, count(*) as value").Group("load_type").Scan(&list).Error; err != nil {
 		return nil, err
 	}
 	return list, nil

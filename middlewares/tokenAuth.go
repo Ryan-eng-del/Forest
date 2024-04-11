@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// 说明：该方法已经作废，最新的接口认证采用 session 认证
 func JWTTokenAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := strings.Replace(ctx.GetHeader("Authorization"), "Bearer ", "", 1)

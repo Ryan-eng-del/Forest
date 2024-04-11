@@ -117,8 +117,10 @@ func initModule(configPath string, modules []string) error {
 		// 		return fmt.Errorf("[ERROR] %s%s", time.Now().Format(confLib.TimeFormat), " InitZookeeperConf:"+err.Error())
 		// 	}
 		// }
-
+	
 	if location, err := time.LoadLocation(confLib.BaseConfInstance.TimeLocation); err != nil {
+		return fmt.Errorf("[ERROR] %s%s", time.Now().Format(confLib.TimeFormat), " InitTimeLocation:"+err.Error())
+	} else {
 		confLib.TimeLocation = location
 	}
 

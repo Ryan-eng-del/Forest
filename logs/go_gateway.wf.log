@@ -5,3 +5,69 @@
 [ERROR][2024-04-11T14:22:57.618][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
 [ERROR][2024-04-11T14:24:16.393][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
 [ERROR][2024-04-11T14:24:49.365][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:27:58.371][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:29:36.175][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:29:41.059][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:31:31.379][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:32:13.042][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:40:05.121][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:42:01.521][DistributedCountHandler.go:43] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:42:16.310][DistributedCountHandler.go:43] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:43:13.371][DistributedCountHandler.go:43] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:44:46.612][DistributedCountHandler.go:43] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T16:48:04.972][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:05.973][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:06.972][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:07.972][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:08.975][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:09.972][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:10.974][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:11.972][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:12.973][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:13.953][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:14.000][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:48:15.974][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:07.617][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:08.619][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:09.620][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:10.625][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:11.620][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:12.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:13.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:14.619][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:15.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:16.605][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:17.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:18.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:19.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:20.617][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:21.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:22.640][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:23.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:24.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:25.622][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:26.616][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:27.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:28.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:29.619][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:30.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:31.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:32.619][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:33.623][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:34.618][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:36.654][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:37.655][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:38.656][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:39.701][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:40.655][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:41.653][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:42.653][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:43.656][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:44.655][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:45.610][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:46.655][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:47.667][DistributedCountHandler.go:90] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:50.909][DistributedCountHandler.go:90] redis: nil
+[ERROR][2024-04-11T16:53:50.909][DistributedCountHandler.go:91] Failed to get day data redis: nil
+[ERROR][2024-04-11T16:53:51.906][DistributedCountHandler.go:90] redis: nil
+[ERROR][2024-04-11T16:53:51.906][DistributedCountHandler.go:91] Failed to get day data redis: nil

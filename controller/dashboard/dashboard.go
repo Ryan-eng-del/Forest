@@ -11,6 +11,7 @@ import (
 	lib "go-gateway/lib/mysql"
 	"go-gateway/model"
 	"go-gateway/public"
+	"log"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -86,6 +87,7 @@ func (service *DashboardController) ServiceStat(c *gin.Context) {
 	}
 	serviceInfo := &model.Service{}
 	list, err := serviceInfo.GroupByLoadType(c, tx)
+	log.Println(list, "list")
 	if err != nil {
 		public.ResponseError(c, 2002, err)
 		return
@@ -116,7 +118,7 @@ func (service *DashboardController) ServiceStat(c *gin.Context) {
 // @ID /dashboard/flow_stat
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} middleware.Response{data=dto.ServiceStatOutput} "success"
+// @Success 200 {object} public.Response{data=serviceDto.ServiceStatOutput} "success"
 // @Router /dashboard/flow_stat [get]
 func (service *DashboardController) FlowStat(c *gin.Context) {
 	counter, err := handler.ServerCountHandler.GetCounter(libConst.FlowTotal)

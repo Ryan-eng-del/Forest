@@ -1,15 +1,17 @@
 package adminController
 
 import (
-	"errors"
+	"encoding/json"
+	"fmt"
 	adminDto "go-gateway/dto/admin"
+	constLib "go-gateway/lib/const"
 	lib "go-gateway/lib/func"
 	mysqlLib "go-gateway/lib/mysql"
-
 	"go-gateway/model"
 	public "go-gateway/public"
 	"time"
 
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,21 +35,29 @@ func RegisterAuth(group gin.IRoutes) {
 // @Success 200 {object} public.Response{data=adminDto.AdminInfoOutput} "success"
 // @Router /admin/info [get]
 func (a *AdminController) AdminInfo(c *gin.Context) {
-	anyAdmin, exist := c.Get("admin")
-	if !exist {
-		public.ResponseError(c, 2000, errors.New("admin not found"))
+	// anyAdmin, exist := c.Get("admin")
+	// if !exist {
+	// 	public.ResponseError(c, 2000, errors.New("admin not found"))
+	// 	return
+	// }
+
+	// admin, ok := anyAdmin.(*model.Admin); 
+	// if !ok {
+	// 	public.ResponseError(c, 2000, errors.New("not a model admin"))
+	// 	return
+	// }
+
+	sess := sessions.Default(c)
+	sessInfo := sess.Get(constLib.AdminSessionInfoKey)
+	adminSessionInfo := &adminDto.AdminSessionInfo{}
+	if err := json.Unmarshal([]byte(fmt.Sprint(sessInfo)), adminSessionInfo); err != nil {
+		public.ResponseError(c, 2000, err)
 		return
 	}
-
-	admin, ok := anyAdmin.(*model.Admin); 
-	if !ok {
-		public.ResponseError(c, 2000, errors.New("not a model admin"))
-		return
-	}
-
+	
 	output :=  adminDto.AdminInfoOutput{
-		ID: admin.ID,
-		Name: admin.UserName,
+		ID: uint(adminSessionInfo.ID),
+		Name: adminSessionInfo.UserName,
 		LoginTime:     time.Now(),
 		Avatar:       "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif",
 		Introduction: "I am a super administrator",
@@ -72,26 +82,29 @@ func (a *AdminController) AdminChangePwd(c *gin.Context) {
 		public.ResponseError(c, 2003, err)
 	}
 
+
+	sess := sessions.Default(c)
+	sessInfo := sess.Get(constLib.AdminSessionInfoKey)
+	adminSessionInfo := &adminDto.AdminSessionInfo{}
+	if err := json.Unmarshal([]byte(fmt.Sprint(sessInfo)), adminSessionInfo); err != nil {
+		public.ResponseError(c, 2000, err)
+		return
+	}
+	
 	tx, _ := mysqlLib.GetGormPool("default")
 
-	anyAdmin, exist := c.Get("admin")
-	if !exist {
-		public.ResponseError(c, 2000, errors.New("admin not found"))
+	adminInfo := &model.Admin{}
+	adminInfo, err := adminInfo.FindById(c, tx, uint(adminSessionInfo.ID))
+	if err != nil {
+		public.ResponseError(c, 2002, err)
 		return
 	}
 
-	admin, ok := anyAdmin.(*model.Admin); 
-	if !ok {
-		public.ResponseError(c, 2000, errors.New("not a model admin"))
-		return
-	}
-
-	admin.Password = lib.GenSaltPassword(admin.Salt, params.Password)
-	if err := admin.Save(c, tx); err != nil {
+	adminInfo.Password = lib.GenSaltPassword(adminInfo.Salt, params.Password)
+	if err := adminInfo.Save(c, tx); err != nil {
 		public.ResponseError(c, 2001, err)
 		return
 	}
-
 	public.ResponseSuccess(c, "")
 }
 

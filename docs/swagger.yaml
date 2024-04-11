@@ -107,6 +107,37 @@ definitions:
         description: token_type
         type: string
     type: object
+  dashboardDto.DashServiceStatItemOutput:
+    properties:
+      load_type:
+        type: integer
+      name:
+        type: string
+      value:
+        type: integer
+    type: object
+  dashboardDto.DashServiceStatOutput:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dashboardDto.DashServiceStatItemOutput'
+        type: array
+      legend:
+        items:
+          type: string
+        type: array
+    type: object
+  dashboardDto.PanelGroupDataOutput:
+    properties:
+      appNum:
+        type: integer
+      currentQps:
+        type: integer
+      serviceNum:
+        type: integer
+      todayRequestNum:
+        type: integer
+    type: object
   model.AccessControl:
     properties:
       black_list:
@@ -666,6 +697,27 @@ paths:
       summary: 管理员登陆
       tags:
       - Admin
+  /admin_login/logout:
+    get:
+      consumes:
+      - application/json
+      description: 管理员退出
+      operationId: /admin_login/logout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 管理员退出
+      tags:
+      - Admin
   /app:
     get:
       consumes:
@@ -841,6 +893,69 @@ paths:
       summary: 租户统计
       tags:
       - App
+  /dashboard/flow_stat:
+    get:
+      consumes:
+      - application/json
+      description: 服务统计
+      operationId: /dashboard/flow_stat
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serviceDto.ServiceStatOutput'
+              type: object
+      summary: 服务统计
+      tags:
+      - Dashboard
+  /dashboard/panel_group_data:
+    get:
+      consumes:
+      - application/json
+      description: 指标统计
+      operationId: /dashboard/panel_group_data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dashboardDto.PanelGroupDataOutput'
+              type: object
+      summary: 指标统计
+      tags:
+      - Dashboard
+  /dashboard/service_stat:
+    get:
+      consumes:
+      - application/json
+      description: 服务统计
+      operationId: /dashboard/service_stat
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dashboardDto.DashServiceStatOutput'
+              type: object
+      summary: 服务统计
+      tags:
+      - Dashboard
   /oauth/tokens:
     post:
       consumes:

@@ -33,6 +33,7 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	if !ok {
 		log.Fatalf("redis.default.config err")
 	}
+	
 	store, err := sessions.NewRedisStore(10, "tcp", redisConf.ProxyList[0], redisConf.Password, []byte("secret"))
 
 
@@ -44,6 +45,7 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 	noAuth := router.Group("/api")
 	
 	noAuth.Use(
+		sessions.Sessions("mysession", store),
 		mids.RecoveryMiddleware(),
 		mids.RequestLogMiddleware(),
 		mids.TranslationMiddleware(),
@@ -59,7 +61,7 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 
 	{
 		adminLogin := noAuth.Group("/admin_login")
-		adminInfo := noAuth.Group("/admin").Use()
+		adminInfo := authApi.Group("/admin").Use()
 		adminController.Register(adminLogin)
 		adminController.RegisterAuth(adminInfo)
 	}

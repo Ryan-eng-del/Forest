@@ -87,11 +87,11 @@ func (adminLogin *AdminLoginController) Login (c *gin.Context) {
 // AdminLogin godoc
 // @Summary 管理员退出
 // @Description 管理员退出
-// @Tags 管理员接口
+// @Tags Admin
 // @ID /admin_login/logout
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} middleware.Response{data=string} "success"
+// @Success 200 {object} public.Response{data=string} "success"
 // @Router /admin_login/logout [get]
 func (adminLogin *AdminLoginController) LoginOut (c *gin.Context) {
 	sess := sessions.Default(c)

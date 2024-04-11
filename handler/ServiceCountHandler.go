@@ -22,8 +22,8 @@ func NewFlowCounter() *FlowCounter {
 }
 
 func init() {
-	ServiceCounterHandler := NewFlowCounter()
-	ServiceManagerHandler.Regist(ServiceCounterHandler)
+	ServerCountHandler = NewFlowCounter()
+	ServiceManagerHandler.Regist(ServerCountHandler)
 }
 
 
