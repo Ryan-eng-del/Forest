@@ -34,6 +34,9 @@ func (t *LoadBalance) GetIPListByModel() []string {
 }
 
 
+func (t *LoadBalance) GetWeightListByModel() []string {
+	return strings.Split(t.WeightList, ",")
+}
 
 
 func (t *LoadBalance) Save(c *gin.Context, tx *gorm.DB) error {
