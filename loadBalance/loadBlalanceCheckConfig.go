@@ -78,6 +78,7 @@ func (s *LoadBalanceCheckConf) WatchConf() {
 			}
 	}()
 }
+
 func (s *LoadBalanceCheckConf) GetConf() []string {
 	confList := []string{}
 	for _, ip := range s.activeList {

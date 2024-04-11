@@ -26,11 +26,6 @@ const docTemplate = `{
     "paths": {
         "/admin/change_pwd": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "修改密码",
                 "consumes": [
                     "application/json"
@@ -78,11 +73,6 @@ const docTemplate = `{
         },
         "/admin/info": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "管理员信息",
                 "consumes": [
                     "application/json"
@@ -407,13 +397,55 @@ const docTemplate = `{
                 }
             }
         },
-        "/service": {
-            "get": {
-                "security": [
+        "/oauth/tokens": {
+            "post": {
+                "description": "获取TOKEN",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OAUTH"
+                ],
+                "summary": "获取TOKEN",
+                "operationId": "/oauth/tokens",
+                "parameters": [
                     {
-                        "ApiKeyAuth": []
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/oauthDto.TokensInput"
+                        }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/public.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/oauthDto.TokensOutput"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/service": {
+            "get": {
                 "description": "服务列表",
                 "consumes": [
                     "application/json"
@@ -472,11 +504,6 @@ const docTemplate = `{
         },
         "/service/grpc": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "创建 grpc 服务",
                 "consumes": [
                     "application/json"
@@ -524,11 +551,6 @@ const docTemplate = `{
         },
         "/service/grpc/{service_id}": {
             "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "更新 grpc 服务",
                 "consumes": [
                     "application/json"
@@ -583,11 +605,6 @@ const docTemplate = `{
         },
         "/service/http": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "创建 http 服务",
                 "consumes": [
                     "application/json"
@@ -635,11 +652,6 @@ const docTemplate = `{
         },
         "/service/http/{service_id}": {
             "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "更新 http 服务",
                 "consumes": [
                     "application/json"
@@ -694,11 +706,6 @@ const docTemplate = `{
         },
         "/service/tcp": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "创建 tcp 服务",
                 "consumes": [
                     "application/json"
@@ -746,11 +753,6 @@ const docTemplate = `{
         },
         "/service/tcp/{service_id}": {
             "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "更新 tcp 服务",
                 "consumes": [
                     "application/json"
@@ -805,11 +807,6 @@ const docTemplate = `{
         },
         "/service/{service_id}": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "服务列表",
                 "consumes": [
                     "application/json"
@@ -853,11 +850,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "服务删除",
                 "consumes": [
                     "application/json"
@@ -1068,6 +1060,9 @@ const docTemplate = `{
                 "black_list": {
                     "type": "string"
                 },
+                "client_flow_type": {
+                    "type": "integer"
+                },
                 "clientip_flow_limit": {
                     "type": "integer"
                 },
@@ -1081,6 +1076,9 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.Service"
                 },
                 "service_flow_limit": {
+                    "type": "integer"
+                },
+                "service_flow_type": {
                     "type": "integer"
                 },
                 "service_id": {
@@ -1294,6 +1292,46 @@ const docTemplate = `{
                 },
                 "service_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "oauthDto.TokensInput": {
+            "type": "object",
+            "required": [
+                "grant_type",
+                "scope"
+            ],
+            "properties": {
+                "grant_type": {
+                    "description": "授权类型",
+                    "type": "string",
+                    "example": "client_credentials"
+                },
+                "scope": {
+                    "description": "权限范围",
+                    "type": "string",
+                    "example": "read_write"
+                }
+            }
+        },
+        "oauthDto.TokensOutput": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "description": "access_token",
+                    "type": "string"
+                },
+                "expires_in": {
+                    "description": "expires_in",
+                    "type": "integer"
+                },
+                "scope": {
+                    "description": "scope",
+                    "type": "string"
+                },
+                "token_type": {
+                    "description": "token_type",
+                    "type": "string"
                 }
             }
         },

@@ -111,6 +111,8 @@ definitions:
     properties:
       black_list:
         type: string
+      client_flow_type:
+        type: integer
       clientip_flow_limit:
         type: integer
       id:
@@ -120,6 +122,8 @@ definitions:
       service:
         $ref: '#/definitions/model.Service'
       service_flow_limit:
+        type: integer
+      service_flow_type:
         type: integer
       service_id:
         type: integer
@@ -260,6 +264,35 @@ definitions:
         $ref: '#/definitions/model.Service'
       service_id:
         type: integer
+    type: object
+  oauthDto.TokensInput:
+    properties:
+      grant_type:
+        description: 授权类型
+        example: client_credentials
+        type: string
+      scope:
+        description: 权限范围
+        example: read_write
+        type: string
+    required:
+    - grant_type
+    - scope
+    type: object
+  oauthDto.TokensOutput:
+    properties:
+      access_token:
+        description: access_token
+        type: string
+      expires_in:
+        description: expires_in
+        type: integer
+      scope:
+        description: scope
+        type: string
+      token_type:
+        description: token_type
+        type: string
     type: object
   public.Response:
     properties:
@@ -564,8 +597,6 @@ paths:
                 data:
                   type: string
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 修改密码
       tags:
       - Admin
@@ -587,8 +618,6 @@ paths:
                 data:
                   $ref: '#/definitions/adminDto.AdminInfoOutput'
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 管理员信息
       tags:
       - Admin
@@ -768,6 +797,34 @@ paths:
       summary: 租户更新
       tags:
       - App
+  /oauth/tokens:
+    post:
+      consumes:
+      - application/json
+      description: 获取TOKEN
+      operationId: /oauth/tokens
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/oauthDto.TokensInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/oauthDto.TokensOutput'
+              type: object
+      summary: 获取TOKEN
+      tags:
+      - OAUTH
   /service:
     get:
       consumes:
@@ -801,8 +858,6 @@ paths:
                 data:
                   $ref: '#/definitions/serviceDto.ServiceListOutput'
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 服务列表
       tags:
       - Service
@@ -830,8 +885,6 @@ paths:
                 data:
                   type: string
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 服务删除
       tags:
       - Service
@@ -858,8 +911,6 @@ paths:
                 data:
                   $ref: '#/definitions/model.ServiceDetail'
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 服务详情
       tags:
       - Service
@@ -888,8 +939,6 @@ paths:
                 data:
                   type: string
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 创建 grpc 服务
       tags:
       - Service
@@ -923,8 +972,6 @@ paths:
                 data:
                   type: string
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 更新 grpc 服务
       tags:
       - Service
@@ -953,8 +1000,6 @@ paths:
                 data:
                   type: string
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 创建 http 服务
       tags:
       - Service
@@ -988,8 +1033,6 @@ paths:
                 data:
                   type: string
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 更新 http 服务
       tags:
       - Service
@@ -1018,8 +1061,6 @@ paths:
                 data:
                   type: string
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 创建 tcp 服务
       tags:
       - Service
@@ -1053,8 +1094,6 @@ paths:
                 data:
                   type: string
               type: object
-      security:
-      - ApiKeyAuth: []
       summary: 更新 tcp 服务
       tags:
       - Service

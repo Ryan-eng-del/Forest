@@ -135,5 +135,4 @@ func (j *JWT) RefreshJWT(tokenStr string) (string, error) {
 	}
 
 	return "", ErrTokenInvalid
-
 }
