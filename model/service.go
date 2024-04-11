@@ -1,6 +1,7 @@
 package model
 
 import (
+	dashboardDto "go-gateway/dto/dashboard"
 	serviceDto "go-gateway/dto/service"
 	mysqlLib "go-gateway/lib/mysql"
 	"go-gateway/public"
@@ -15,6 +16,17 @@ type Service struct {
 	LoadType    public.LoadType       `json:"load_type" gorm:"comment:负载类型 0=http 1=tcp 2=grpc;"`
 	ServiceName string    `json:"service_name" gorm:"comment:服务名称;type:varchar(255);"`
 	ServiceDesc string    `json:"service_desc" gorm:"comment:服务描述;type:varchar(255);"`
+}
+
+
+func (t *Service) GroupByLoadType(c *gin.Context, tx *gorm.DB) ([]dashboardDto.DashServiceStatItemOutput, error) {
+	list := []dashboardDto.DashServiceStatItemOutput{}
+	query := tx.Scopes(mysqlLib.WithContextAndTable(c, t.TableName()), mysqlLib.LogicalObjects(),mysqlLib.IDDesc())
+
+	if err := query.Table(t.TableName()).Select("load_type, count(*) as value").Group("load_type").Scan(&list).Error; err != nil {
+		return nil, err
+	}
+	return list, nil
 }
 
 func (t *Service) PageList(c *gin.Context, tx *gorm.DB, params *serviceDto.ServiceListInput) ([]Service, int64, error) {
