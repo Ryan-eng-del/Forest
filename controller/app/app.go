@@ -3,6 +3,8 @@ package appController
 import (
 	"errors"
 	appDto "go-gateway/dto/app"
+	"go-gateway/handler"
+	lib "go-gateway/lib/const"
 	libFunc "go-gateway/lib/func"
 	libMysql "go-gateway/lib/mysql"
 	"go-gateway/model"
@@ -64,6 +66,15 @@ func (i *AppController) AppList(ctx *gin.Context) {
 	outputList := []appDto.APPListItemOutput{}
 
 	for _, item := range appList {
+
+		appCounter, err := handler.ServerCountHandler.GetCounter(lib.FlowAppPrefix  + item.AppID)
+
+		if err != nil {
+			public.ResponseError(ctx, 2003, err)
+			ctx.Abort()
+			return
+		}
+
 		outputList = append(outputList, appDto.APPListItemOutput{
 			ID:       int64(item.ID),
 			AppID:    item.AppID,
@@ -72,8 +83,8 @@ func (i *AppController) AppList(ctx *gin.Context) {
 			WhiteIPS: item.WhiteIps,
 			Qpd:      int64(item.Qpd),
 			Qps:      int64(item.Qps),
-			RealQpd:  1,
-			RealQps:  1,
+			RealQpd:  appCounter.TotalCount,
+			RealQps:  appCounter.QPS,
 			CreatedAt: item.CreateAt,
 			UpdatedAt: item.UpdateAt,
 		})
@@ -84,7 +95,6 @@ func (i *AppController) AppList(ctx *gin.Context) {
 	output.Total = count
 	public.ResponseSuccess(ctx, output)
 }
-
 
 
 // APPDetail godoc

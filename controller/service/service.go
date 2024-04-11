@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	serviceDto "go-gateway/dto/service"
+	"go-gateway/handler"
+	lib "go-gateway/lib/const"
 	libConst "go-gateway/lib/const"
 	libLog "go-gateway/lib/log"
 	libMysql "go-gateway/lib/mysql"
@@ -799,15 +801,21 @@ func (s *ServiceController) ServiceList(c *gin.Context) {
 		}
 
 		ipList := serviceDetail.LoadBalance.GetIPListByModel()
+
+		counter, err := handler.ServerCountHandler.GetCounter(lib.FlowServicePrefix + listItem.ServiceName)
+		if err != nil {
+			public.ResponseError(c, 2004, err)
+			return
+		}
+
 		serviceListItem := serviceDto.ServiceListItemOutput{
 			ID: int64(listItem.ID),
 			ServiceAddr: serviceAddr,
 			ServiceName: listItem.ServiceName,
 			ServiceDesc: listItem.ServiceDesc,
 			LoadType: public.LoadType(listItem.LoadType),
-			// todo 完善 Qps Qpd
-			Qps: 0,
-			Qpd: 1,
+			Qps: counter.QPS,
+			Qpd: counter.TotalCount,
 			TotalNode: len(ipList),
 			CreateAt: public.LocalTime(listItem.CreateAt),
 			UpdateAt: public.LocalTime(listItem.UpdateAt),
