@@ -132,6 +132,25 @@ func (o *DistributedCountService) GetDayData(t time.Time) (int64, error) {
 	}
 }
 
+func (o *DistributedCountService) GetHourData(t time.Time) (int64, error) {
+	c, err := libRedis.GetRedisPoll("default")
+	if err != nil {
+		return 0, err
+	}
+
+	result, err := c.Get(context.Background(), o.GetHourKey(t)).Result()
+
+	if err != nil {
+		return 0, err
+	}
+
+	if dayCount, err := strconv.ParseInt(result, 10, 64); err != nil {
+		return 0, err
+	} else {
+		return dayCount, nil
+	}
+}
+
 func (o *DistributedCountService) GetDayKey(t time.Time) string {
 	dayStr := t.In(lib.TimeLocation).Format("20060102")
 	return fmt.Sprintf("%s_%s_%s", libConst.RedisFlowDayKey, dayStr, o.Name)

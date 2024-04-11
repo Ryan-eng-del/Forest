@@ -5,11 +5,12 @@ import (
 	"fmt"
 	serviceDto "go-gateway/dto/service"
 	"go-gateway/handler"
-	lib "go-gateway/lib/const"
+	libConf "go-gateway/lib/conf"
 	libConst "go-gateway/lib/const"
 	libLog "go-gateway/lib/log"
 	libMysql "go-gateway/lib/mysql"
 	libViper "go-gateway/lib/viper"
+	"time"
 
 	"go-gateway/model"
 	"go-gateway/public"
@@ -23,7 +24,7 @@ type ServiceController struct {}
 
 func Register(group gin.IRoutes) {
 	service := &ServiceController{}
-	// todo 补充 Redis 服务统计功能
+	group.GET("/:serviceId/stat", service.ServiceStat)
 	group.GET("", service.ServiceList)
 	group.DELETE("/:serviceId", service.ServiceDelete)
 	group.GET("/:serviceId", service.ServiceDetail)
@@ -33,6 +34,73 @@ func Register(group gin.IRoutes) {
 	group.PATCH("/tcp/:serviceId", service.ServiceUpdateTcp)
 	group.POST("/grpc", service.ServiceCreateGrpc)
 	group.PATCH("/grpc/:serviceId", service.ServiceUpdateGrpc)
+}
+
+
+// ServiceStat godoc
+// @Summary 服务统计
+// @Description 服务统计
+// @Tags Service
+// @ID /service/{service_id}/stat
+// @Accept  json
+// @Produce  json
+// @Param service_id path string true "服务id"
+// @Success 200 {object} public.Response{data=serviceDto.ServiceStatOutput} "success"
+// @Router /service/{service_id}/stat [get]
+func (service *ServiceController) ServiceStat(c *gin.Context) {
+	serviceIdStr := c.Param("serviceId")
+	serviceId, err := strconv.ParseInt(serviceIdStr, 10, 64)
+
+	if err != nil {
+		public.ResponseError(c, public.ResponseCode(2001), err)
+		return
+	}
+
+	serviceInfo := model.Service{}
+	serviceInfo.ID = uint(serviceId)
+	tx, err := libMysql.GetGormPool("default")
+
+	if err != nil {
+		public.ResponseError(c, public.ResponseCode(2002), err)
+		return
+	}
+
+	serviceDetail, err := serviceInfo.ServiceDetail(c, tx)
+
+	if err != nil {
+		public.ResponseError(c, 2003, err)
+		return
+	}
+
+	counter, err := handler.ServerCountHandler.GetCounter(libConst.FlowServicePrefix + serviceDetail.Info.ServiceName)
+	if err != nil {
+		public.ResponseError(c, 2004, err)
+		return
+	}
+
+	todayList := []int64{}
+	currentTime := time.Now()
+
+	for i := 0; i <= currentTime.Hour(); i++ {
+		dateTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), i, 0, 0, 0, libConf.TimeLocation)
+		hourData, _ := counter.GetHourData(dateTime)
+		todayList = append(todayList, hourData)
+	}
+
+	yesterdayList := []int64{}
+	yesterTime := currentTime.Add(-1 * time.Duration(time.Hour*24))
+
+	for i := 0; i <= 23; i++ {
+		dateTime := time.Date(yesterTime.Year(), yesterTime.Month(), yesterTime.Day(), i, 0, 0, 0, libConf.TimeLocation)
+		hourData, _ := counter.GetHourData(dateTime)
+		yesterdayList = append(yesterdayList, hourData)
+	}
+
+	output := serviceDto.ServiceStatOutput{
+		Today:     todayList,
+		Yesterday: yesterdayList,
+	}
+	public.ResponseSuccess(c, output)
 }
 
 
@@ -802,7 +870,7 @@ func (s *ServiceController) ServiceList(c *gin.Context) {
 
 		ipList := serviceDetail.LoadBalance.GetIPListByModel()
 
-		counter, err := handler.ServerCountHandler.GetCounter(lib.FlowServicePrefix + listItem.ServiceName)
+		counter, err := handler.ServerCountHandler.GetCounter(libConst.FlowServicePrefix + listItem.ServiceName)
 		if err != nil {
 			public.ResponseError(c, 2004, err)
 			return

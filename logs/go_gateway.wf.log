@@ -2,3 +2,6 @@
 [ERROR][2024-04-11T11:27:29.784][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
 [ERROR][2024-04-11T11:27:35.659][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
 [ERROR][2024-04-11T11:29:05.785][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T14:22:57.618][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T14:24:16.393][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In
+[ERROR][2024-04-11T14:24:49.365][DistributedCountHandler.go:42] DistributedCountService error Exiting: time: missing Location in call to Time.In

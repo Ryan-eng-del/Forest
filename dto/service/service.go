@@ -9,6 +9,10 @@ import (
  
 
 
+type ServiceStatOutput struct {
+	Today     []int64 `json:"today" form:"today" comment:"今日流量" example:"1" validate:""`         //列表
+	Yesterday []int64 `json:"yesterday" form:"yesterday" comment:"昨日流量" example:"1" validate:""` //列表
+}
 type ServiceListInput struct {
 	Info string `json:"info" form:"info" comment:"关键词" en_comment:"keyword" validate:"" example:""`
 	PageNo int `json:"page_no" form:"page_no" comment:"页数" en_comment:"page number" validate:"required"`

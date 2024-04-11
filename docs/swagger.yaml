@@ -558,6 +558,23 @@ definitions:
       total:
         type: integer
     type: object
+  serviceDto.ServiceStatOutput:
+    properties:
+      today:
+        description: 列表
+        example:
+        - 1
+        items:
+          type: integer
+        type: array
+      yesterday:
+        description: 列表
+        example:
+        - 1
+        items:
+          type: integer
+        type: array
+    type: object
 host: localhost:8880
 info:
   contact:
@@ -797,6 +814,33 @@ paths:
       summary: 租户更新
       tags:
       - App
+  /app/{app_id}/stat:
+    get:
+      consumes:
+      - application/json
+      description: 租户统计
+      operationId: /app/{app_id}/stat
+      parameters:
+      - description: 租户ID
+        in: path
+        name: app_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serviceDto.ServiceStatOutput'
+              type: object
+      summary: 租户统计
+      tags:
+      - App
   /oauth/tokens:
     post:
       consumes:
@@ -912,6 +956,33 @@ paths:
                   $ref: '#/definitions/model.ServiceDetail'
               type: object
       summary: 服务详情
+      tags:
+      - Service
+  /service/{service_id}/stat:
+    get:
+      consumes:
+      - application/json
+      description: 服务统计
+      operationId: /service/{service_id}/stat
+      parameters:
+      - description: 服务id
+        in: path
+        name: service_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/public.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serviceDto.ServiceStatOutput'
+              type: object
+      summary: 服务统计
       tags:
       - Service
   /service/grpc:

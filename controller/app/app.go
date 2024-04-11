@@ -3,13 +3,16 @@ package appController
 import (
 	"errors"
 	appDto "go-gateway/dto/app"
+	serviceDto "go-gateway/dto/service"
 	"go-gateway/handler"
-	lib "go-gateway/lib/const"
+	libConf "go-gateway/lib/conf"
+	libConst "go-gateway/lib/const"
 	libFunc "go-gateway/lib/func"
 	libMysql "go-gateway/lib/mysql"
 	"go-gateway/model"
 	"go-gateway/public"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +24,7 @@ func Register (i gin.IRoutes) {
 	appController := &AppController{}
 	i.GET("", appController.AppList)
 	i.GET("/:appId", appController.AppDetail)
-	i.GET("/statistics", appController.AppStatistics)
+	i.GET("/:appId/stat", appController.AppStatistics)
 	i.DELETE("/:appId", appController.AppDelete)
 	i.PATCH("/:appId", appController.AppUpdate)
 	i.POST("", appController.AppAdd)
@@ -67,7 +70,7 @@ func (i *AppController) AppList(ctx *gin.Context) {
 
 	for _, item := range appList {
 
-		appCounter, err := handler.ServerCountHandler.GetCounter(lib.FlowAppPrefix  + item.AppID)
+		appCounter, err := handler.ServerCountHandler.GetCounter(libConst.FlowAppPrefix  + item.AppID)
 
 		if err != nil {
 			public.ResponseError(ctx, 2003, err)
@@ -138,8 +141,71 @@ func (i *AppController) AppDetail(ctx *gin.Context) {
 	public.ResponseSuccess(ctx, app)
 }
 
+// AppStatistics godoc
+// @Summary 租户统计
+// @Description 租户统计
+// @Tags App
+// @ID /app/{app_id}/stat
+// @Accept  json
+// @Produce  json
+// @Param app_id path string true "租户ID"
+// @Success 200 {object} public.Response{data=serviceDto.ServiceStatOutput} "success"
+// @Router /app/{app_id}/stat [get]
 func (i *AppController) AppStatistics(ctx *gin.Context) {
+	appIdStr := ctx.Param("appId")
+	appId, err := strconv.ParseInt(appIdStr, 10, 64)
+	if err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2001), errors.New("not a valid app id"))
+		return
+	}
 
+	tx, err := libMysql.GetGormPool("default")
+
+	if err != nil {
+		public.ResponseError(ctx, public.ResponseCode(2002), err)
+		return
+	}
+
+	search := model.App{
+		AbstractModel: model.AbstractModel{
+			ID: uint(appId),
+		},
+	}
+
+	app, err := search.Find(ctx, tx, &search)
+	if err != nil {
+		public.ResponseError(ctx, 2003, err)
+		return
+	}
+
+		//今日流量全天小时级访问统计
+		todayStat := []int64{}
+		counter, err := handler.ServerCountHandler.GetCounter(libConst.FlowAppPrefix + app.AppID)
+		if err != nil {
+			public.ResponseError(ctx, 2004, err)
+			ctx.Abort()
+			return
+		}
+		currentTime := time.Now()
+		for i := 0; i <= time.Now().In(libConf.TimeLocation).Hour(); i++ {
+			dateTime := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), i, 0, 0, 0, libConf.TimeLocation)
+			hourData, _ := counter.GetHourData(dateTime)
+			todayStat = append(todayStat, hourData)
+		}
+	
+		//昨日流量全天小时级访问统计
+		yesterdayStat := []int64{}
+		yesterTime := currentTime.Add(-1 * time.Duration(time.Hour*24))
+		for i := 0; i <= 23; i++ {
+			dateTime := time.Date(yesterTime.Year(), yesterTime.Month(), yesterTime.Day(), i, 0, 0, 0, libConf.TimeLocation)
+			hourData, _ := counter.GetHourData(dateTime)
+			yesterdayStat = append(yesterdayStat, hourData)
+		}
+		stat := serviceDto.ServiceStatOutput{
+			Today:     todayStat,
+			Yesterday: yesterdayStat,
+		}
+		public.ResponseSuccess(ctx, stat)
 }
 
 
@@ -202,7 +268,6 @@ func (i *AppController) AppAdd(ctx *gin.Context) {
 	if err := params.GetValidParams(ctx); err != nil {
 		public.ResponseError(ctx, 2001, err)
 	}
-
 
 	tx, err := libMysql.GetGormPool("default")
 
