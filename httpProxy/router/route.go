@@ -23,8 +23,7 @@ func InitRouter(mids ...gin.HandlerFunc) *gin.Engine {
 		oauth.Use(middlewares.TranslationMiddleware())
 		oauthController.Register(oauth)
 	}
-
-
+	
 	router.Use(
 		httpMiddlewares.HTTPAccessModeMiddleware(),
 		httpMiddlewares.HTTPFlowCountMiddleware(),
@@ -37,6 +36,7 @@ func InitRouter(mids ...gin.HandlerFunc) *gin.Engine {
 		httpMiddlewares.HTTPHeaderTransferMiddleware(),
 		httpMiddlewares.HTTPStripUriMiddleware(),
 		httpMiddlewares.HTTPUrlRewriteMiddleware(),
+		httpMiddlewares.HTTPReverseProxyMiddleware(),
 	)
 	return router
 }

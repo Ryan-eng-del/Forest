@@ -16,7 +16,6 @@ const (
 	DefaultCheckInterval  = 5
 )
 
-
 type LoadBalanceCheckConf struct {
 	observers    []Observer
 	confIpWeight map[string]string
@@ -50,7 +49,7 @@ func (s *LoadBalanceCheckConf) WatchConf() {
 				default:
 				}
 				changedList := []string{}
-				for rs, _ := range s.confIpWeight {
+				for rs := range s.confIpWeight {
 					conn, err := net.DialTimeout("tcp", rs, time.Duration(DefaultCheckTimeout)*time.Second)
 					if err == nil {
 						conn.Close()
@@ -60,11 +59,7 @@ func (s *LoadBalanceCheckConf) WatchConf() {
 					}
 
 					if err != nil {
-						if _, ok := confIpErrNum[rs]; ok {
-							confIpErrNum[rs] += 1
-						} else {
-							confIpErrNum[rs] = 1
-						}
+						confIpErrNum[rs] += 1
 					}
 
 					if confIpErrNum[rs] < DefaultCheckMaxErrNum {

@@ -23,10 +23,10 @@ const (
 // 6 3 -1  4 2 1 -> c
 // 3 5 0 4 2 1 -> a
 type WeightRoundRobinStrategy struct {
-	curIndex int
+	CurIndex int
 	rss      []*WeightNode
 	rsw      []int
-	conf     LoadBalanceConf
+	Conf     LoadBalanceConf
 }
 
 type WeightNode struct {
