@@ -3,12 +3,16 @@ package server
 import (
 	adminController "go-gateway/controller/admin"
 	appController "go-gateway/controller/app"
+	dashboardController "go-gateway/controller/dashboard"
 	serviceController "go-gateway/controller/service"
+	"log"
 
 	_ "go-gateway/docs"
 
+	confLib "go-gateway/lib/conf"
 	mids "go-gateway/middlewares"
 
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -25,27 +29,55 @@ func InitRouter(middlewares ...gin.HandlerFunc) *gin.Engine {
 		})
 	})
 
-	api := router.Group("/api")
-	api.Use(mids.RequestLogMiddleware(),mids.RecoveryMiddleware(),mids.TranslationMiddleware())
+	redisConf,ok:=confLib.RedisConfInstance.List["default"]
+	if !ok {
+		log.Fatalf("redis.default.config err")
+	}
+	store, err := sessions.NewRedisStore(10, "tcp", redisConf.ProxyList[0], redisConf.Password, []byte("secret"))
 
+
+	if err != nil {
+		log.Fatalf("sessions.NewRedisStore err:%v", err)
+	}
+
+	authApi := router.Group("/api")
+	noAuth := router.Group("/api")
 	
+	noAuth.Use(
+		mids.RecoveryMiddleware(),
+		mids.RequestLogMiddleware(),
+		mids.TranslationMiddleware(),
+	)
+
+	authApi.Use(
+		sessions.Sessions("mysession", store),
+		mids.RecoveryMiddleware(),
+		mids.RequestLogMiddleware(),
+		mids.SessionAuthMiddleware(),
+		mids.TranslationMiddleware(),
+	)
+
 	{
-		adminLogin := api.Group("/admin_login")
-		adminInfo := api.Group("/admin").Use()
+		adminLogin := noAuth.Group("/admin_login")
+		adminInfo := noAuth.Group("/admin").Use()
 		adminController.Register(adminLogin)
 		adminController.RegisterAuth(adminInfo)
 	}
 
 	{
-		serviceRouter := api.Group("/service").Use()
+		serviceRouter := authApi.Group("/service").Use()
 		serviceController.Register(serviceRouter)
 	}
 
 	{
-		serviceRouter := api.Group("/app").Use()
+		serviceRouter := authApi.Group("/app").Use()
 		appController.Register(serviceRouter)
 	}
 
+	{
+		dashRouter := authApi.Group("/dashboard")
+		dashboardController.DashboardRegister(dashRouter)
+	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

@@ -86,4 +86,5 @@ type RedisConf struct {
 	WriteTimeout int      `mapstructure:"write_timeout"`
 	MaxActive int `mapstructure:"max_active"`
 	MaxIdle int `mapstructure:"max_idle"`
+	Password string `mapstructure:"password"`
 }

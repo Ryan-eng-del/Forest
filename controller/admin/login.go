@@ -1,13 +1,15 @@
 package adminController
 
 import (
+	"encoding/json"
 	adminDto "go-gateway/dto/admin"
-	commonDto "go-gateway/dto/common"
-	_jwt "go-gateway/lib/jwt"
+	lib "go-gateway/lib/const"
 	libMysql "go-gateway/lib/mysql"
 	"go-gateway/model"
-	pubic "go-gateway/public"
+	public "go-gateway/public"
+	"time"
 
+	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,41 +35,67 @@ func Register(group gin.IRoutes) {
 // @Router /admin_login/login [post]	
 func (adminLogin *AdminLoginController) Login (c *gin.Context) {
 	params := adminDto.AdminLoginInput{}
-
 	if err := params.BindValidParam(c); err != nil {
-		pubic.ResponseError(c, 2000, err)
+		public.ResponseError(c, 2000, err)
 		return
 	}
 
 	tx, err := libMysql.GetGormPool("default")
 	if err != nil {
-		pubic.ResponseError(c, 2001, err)
+		public.ResponseError(c, 2001, err)
 		return
 	}
 
 	admin := &model.Admin{}
 	admin, err = admin.LoginCheck(c, tx, params)
 	if err != nil {
-		pubic.ResponseError(c, 2002, err)
+		public.ResponseError(c, 2002, err)
 		return
 	}
-
-	token, err := _jwt.NewJWT().GenerateTokenWithUserID(admin.ID)
+	//设置session
+	sessInfo := &adminDto.AdminSessionInfo{
+		ID:        int(admin.ID),
+		UserName:  admin.UserName,
+		LoginTime: time.Now(),
+	}
+	sessBts, err := json.Marshal(sessInfo)
 	if err != nil {
-		pubic.ResponseError(c, 2004, err)
+		public.ResponseError(c, 2003, err)
 		return
 	}
+	sess := sessions.Default(c)
+	sess.Set(lib.AdminSessionInfoKey, string(sessBts))
+	sess.Save()
+	out := &adminDto.AdminLoginOutput{Token: admin.UserName}
+	public.ResponseSuccess(c, out)
+	// token, err := _jwt.NewJWT().GenerateTokenWithUserID(admin.ID)
+	// if err != nil {
+	// 	pubic.ResponseError(c, 2004, err)
+	// 	return
+	// }
 
-	output := &commonDto.TokensOutput{
-		ExpiresIn: 3600 * 7,
-		TokenType:"Bearer",
-		AccessToken: token,
-		Scope: "all",
-	}
-
-	pubic.ResponseSuccess(c, output)
+	// output := &commonDto.TokensOutput{
+	// 	ExpiresIn: 3600 * 7,
+	// 	TokenType:"Bearer",
+	// 	AccessToken: token,
+	// 	Scope: "all",
+	// }
+	// pubic.ResponseSuccess(c, output)
 }
 
-func (adminLogin *AdminLoginController) LoginOut (c *gin.Context) {
 
+// AdminLogin godoc
+// @Summary 管理员退出
+// @Description 管理员退出
+// @Tags 管理员接口
+// @ID /admin_login/logout
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} middleware.Response{data=string} "success"
+// @Router /admin_login/logout [get]
+func (adminLogin *AdminLoginController) LoginOut (c *gin.Context) {
+	sess := sessions.Default(c)
+	sess.Delete(lib.AdminSessionInfoKey)
+	sess.Save()
+	public.ResponseSuccess(c, "")
 }

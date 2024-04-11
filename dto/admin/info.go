@@ -16,7 +16,16 @@ type AdminInfoOutput struct {
 	Roles        []string  `json:"roles"`
 }
 
+type AdminLoginOutput struct {
+	Token string `json:"token" form:"token" comment:"token" example:"token" validate:""` //token
+}
 
+
+type AdminSessionInfo struct {
+	ID        int       `json:"id"`
+	UserName  string    `json:"user_name"`
+	LoginTime time.Time `json:"login_time"`
+}
 type ChangePwdInput struct {
 	Password string `json:"password" form:"password" comment:"密码" example:"123456" validate:"required"` //密码
 }
