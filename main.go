@@ -73,9 +73,15 @@ func main() {
 	go func() {
 		httpProxyServer.ServerRun()
 	}()
-
+	
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 	<- quit
 	server.HTTPServerStop()
 }
+
+func StartProxy () {}
+
+func StartControl() {}
+
+func StartBoth() {}
