@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `gateway_service_http_rule` (
   `need_https` tinyint(4) NOT NULL  COMMENT '支持https 1=支持',
   `need_strip_uri` tinyint(4) NOT NULL  COMMENT '启用strip_uri 1=启用',
   `need_websocket` tinyint(4) NOT NULL  COMMENT '是否支持websocket 1=支持',
-  `url_rewrite` varchar(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'url重写功能 格式：^/gatekeeper/test_service(.*) $1 多个逗号间隔',
+  `url_rewrite` varchar(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'url重写功能 格式：^/forest-gateway/test_service(.*) $1 多个逗号间隔',
   `header_transfor` varchar(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'header转换支持增加(add)、删除(del)、修改(edit) 格式: add headname headvalue 多个逗号间隔',
   PRIMARY KEY (`id`),
   KEY `fk_service_http_rule_service` (`service_id`),
