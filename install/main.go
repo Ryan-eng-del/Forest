@@ -1,8 +1,8 @@
 package main
 
 import (
-	"go-gateway/install/tool"
 	"go-gateway/install/check"
+	"go-gateway/install/tool"
 	"os"
 )
 
@@ -19,10 +19,16 @@ func main() {
 		os.Exit(-1)
 	}
 
-	
+	err = check.InitDb(); if err != nil{
+		tool.LogError.Println(err)
+		os.Exit(-1)
+	}
+
+
+
+
+
 	// var (
 	// 	err error
 	// )
-
-
 }

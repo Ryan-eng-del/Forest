@@ -1,5 +1,4 @@
 #! bin/bash
-
 function checkGoVerion() {
   useGoVersion="1120"
   goVersion=`go version |grep -Eo '([0-9])\.([0-9]{1,2})\.([0-9]*)' |awk -F '.' '{print $1 $2 $3}'`
