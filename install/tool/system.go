@@ -2,6 +2,7 @@ package tool
 
 import (
 	"os"
+	"os/exec"
 	"runtime"
 	"strings"
 )
@@ -42,4 +43,43 @@ func forestGatewayPath() string{
 	pathArr = pathArr[0:index-1]
 	path = strings.Join(pathArr, "/")
 	return path
+}
+
+
+func Cmd(command string) (string, error){
+	LogInfo.Println(command)
+	cmd := exec.Command(CommandType, CommandArgs, command)
+	str, err := cmd.Output()
+	LogInfo.Println(string(str))
+	return string(str), err
+}
+
+func RunCmd(command string) error{
+	cmd := exec.Command(CommandType, CommandArgs, command)
+	stdout, err := cmd.StdoutPipe()
+	cmd.Stderr = cmd.Stdout
+
+	if err != nil {
+		return err
+	}
+
+	if err = cmd.Start(); err != nil {
+		return err
+	}
+
+	// 从管道中实时获取输出并打印到终端
+
+	for {
+		tmp := make([]byte, 1024 * 1024)
+		_, err := stdout.Read(tmp)
+		LogInfo.Println(string(tmp))
+		if err != nil {
+			break
+		}	
+	}
+
+	if err = cmd.Wait(); err != nil {
+		return err
+	}
+	return nil
 }

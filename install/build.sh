@@ -1,5 +1,4 @@
 #!/bin/bash
-
 function buildLinux() {
     echo =================================
     echo ==========Build Linux ======
