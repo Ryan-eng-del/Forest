@@ -3,6 +3,7 @@ package main
 import (
 	"go-gateway/handler"
 	httpProxyServer "go-gateway/httpProxy/server"
+	lib "go-gateway/lib/conbra"
 	"go-gateway/server"
 	"os"
 	"os/signal"
@@ -58,30 +59,76 @@ import (
 // @x-extension-openapi {"example": "value on a json format"}
 func main() {
 	// server.Migrate()
-	err := server.InitModule("./conf/dev/")
+	if err := lib.CmdExecute(); err != nil || lib.GetCmdPanelType() == "" {
+		os.Exit(1)
+	}
+
+	if lib.GetCmdPanelType() == "proxy" {
+		StartProxy()
+	}
+	if lib.GetCmdPanelType() == "control" {
+		StartControl()
+	}
+	if lib.GetCmdPanelType() == "both" {
+		StartBoth()
+	}
+}
+
+func StartProxy () {
+	err := server.InitModule(lib.GetCmdConfPath())
 	if err != nil {
 		panic(err)
 	}
-
 	handler.AppManagerHandler.LoadAndWatch()
 	handler.ServiceManagerHandler.LoadAndWatch()
-	
-	go func () {
-		server.HttpServerRun()
-	}()
 
 	go func() {
 		httpProxyServer.ServerRun()
 	}()
-	
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
+	<- quit
+	httpProxyServer.HttpServerStop()
+}
+
+func StartControl() {
+	err := server.InitModule(lib.GetCmdConfPath())
+	if err != nil {
+		panic(err)
+	}
+	handler.AppManagerHandler.LoadAndWatch()
+	handler.ServiceManagerHandler.LoadAndWatch()
+
+	go func () {
+		server.HttpServerRun()
+	}()
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 	<- quit
 	server.HTTPServerStop()
 }
 
-func StartProxy () {}
+func StartBoth() {
+	err := server.InitModule(lib.GetCmdConfPath())
+	if err != nil {
+		panic(err)
+	}
+	handler.AppManagerHandler.LoadAndWatch()
+	handler.ServiceManagerHandler.LoadAndWatch()
 
-func StartControl() {}
+	go func() {
+		httpProxyServer.ServerRun()
+	}()
 
-func StartBoth() {}
+	go func () {
+		server.HttpServerRun()
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
+	<- quit
+	httpProxyServer.HttpServerStop()
+	server.HTTPServerStop()
+}

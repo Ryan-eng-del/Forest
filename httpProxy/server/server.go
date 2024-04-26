@@ -1,6 +1,7 @@
 package httpProxyServer
 
 import (
+	"context"
 	router "go-gateway/httpProxy/router"
 	libViper "go-gateway/lib/viper"
 	"go-gateway/middlewares"
@@ -32,4 +33,13 @@ func ServerRun() {
 	if err := HttpSrvHandler.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf(" [ERROR] http_proxy_run %s err:%v\n", libViper.ViperInstance.GetStringConf("proxy.http.addr"), err)
 	}
+}
+
+func HttpServerStop() {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := HttpSrvHandler.Shutdown(ctx); err != nil {
+		log.Printf("[ERROR] HTTPServerStop failed: %v\n", err)
+	}
+	log.Printf("[INFO] HTTPServerStop completed")
 }
