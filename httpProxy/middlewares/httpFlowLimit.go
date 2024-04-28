@@ -26,10 +26,9 @@ func HttpFlowLimitMiddleware() gin.HandlerFunc {
 		if serviceFlowNum > 0 {			
 			limiterBuffer := bytes.NewBufferString(lib.FlowServicePrefix)
 			limiterBuffer.WriteString(serviceDetail.Info.ServiceName)
-			
+
 			serviceLimiter, err := handler.FlowLimiterHandler.GetLimiter(limiterBuffer.String(), float64(serviceFlowNum), int(serviceFlowType), true)
-
-
+			
 			if err != nil {
 				public.ResponseError(c, 5001, err)
 				c.Abort()
