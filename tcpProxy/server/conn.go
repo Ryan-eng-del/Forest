@@ -7,7 +7,6 @@ import (
 	"runtime"
 )
 
-
 type contextKey struct {
 	name string
 }

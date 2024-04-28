@@ -100,6 +100,7 @@ func (dp *TcpReverseProxy) ServeTCP(ctx context.Context, src net.Conn) {
 		}
 	}
 	errc := make(chan error, 1)
+	
 	go dp.proxyCopy(errc, src, dst)
 	go dp.proxyCopy(errc, dst, src)
 	<-errc

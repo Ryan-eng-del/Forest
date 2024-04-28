@@ -2,6 +2,8 @@ package tcpMiddlewares
 
 import (
 	"context"
+	"errors"
+	"go-gateway/model"
 	"go-gateway/tcpProxy/server"
 	"math"
 	"net"
@@ -32,6 +34,27 @@ type TcpSliceRouterContext struct {
 	*TcpSliceGroup
 	index int8
 }
+
+func (c *TcpSliceRouterContext) GetServiceDetail() (*model.ServiceDetail, error) {
+	serverInterface := c.Get("service")
+	if serverInterface == nil {
+		return nil, errors.New("service not set")
+	}
+	serviceDetail, ok := serverInterface.(*model.ServiceDetail)
+	if !ok {
+		return nil, errors.New("service conversion failed")
+	}
+	return serviceDetail, nil
+}
+
+func (c *TcpSliceRouterContext) Get(key interface{}) interface{} {
+	return c.Ctx.Value(key)
+}
+
+func (c *TcpSliceRouterContext) Set(key, val interface{}) {
+	c.Ctx = context.WithValue(c.Ctx, key, val)
+}
+
 
 // 从最先加入中间件开始回调
 func (c *TcpSliceRouterContext) Next() {
