@@ -19,7 +19,9 @@ func HTTPWhiteListMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
 		ipList := []string{}
+		
 		if serviceDetail.AccessControl.WhiteList!=""{
 			ipList = strings.Split(serviceDetail.AccessControl.WhiteList, ",")
 		}

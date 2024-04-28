@@ -3,8 +3,6 @@ package router
 import (
 	"context"
 	"fmt"
-	"sync"
-
 	"go-gateway/handler"
 	"go-gateway/model"
 	"go-gateway/public"
@@ -12,6 +10,7 @@ import (
 	tcpMiddlewares "go-gateway/tcpProxy/middlewares"
 	"go-gateway/tcpProxy/server"
 	"log"
+	"sync"
 	"time"
 )
 
@@ -39,9 +38,13 @@ func (t *TcpManager) tcpOneServerRun(service *model.ServiceDetail) {
 	}
 
 	router := tcpMiddlewares.NewTcpSliceRouter()
-	router.Group("/").Use()
+	router.Group("/").Use(
+		tcpMiddlewares.TCPFlowCountMiddleware(),
+		tcpMiddlewares.TCPFlowLimitMiddleware(),
+		tcpMiddlewares.TCPWhiteListMiddleware(),
+		tcpMiddlewares.TCPBlackListMiddleware(),
+	)
 
-	//构建回调handler
 	routerHandler := tcpMiddlewares.NewTcpSliceRouterHandler(
 		func(c *tcpMiddlewares.TcpSliceRouterContext) server.TCPHandler {
 			return tcpProxy.NewTcpLoadBalanceReverseProxy(c, rb)
