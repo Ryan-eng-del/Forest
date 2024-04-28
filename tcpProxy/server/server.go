@@ -15,9 +15,8 @@ var (
 	ErrAbortHandler     = errors.New("tcp: abort TCPHandler")
 	ServerContextKey    = &contextKey{"tcp-server"}
 	LocalAddrContextKey = &contextKey{"local-addr"}
+	ServiceContextKey = &contextKey{"service"}
 )
-
-
 
 type onceCloseListener struct {
 	net.Listener
