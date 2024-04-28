@@ -8,6 +8,7 @@ import (
 	libLog "go-gateway/lib/log"
 	libMysql "go-gateway/lib/mysql"
 	"go-gateway/model"
+	"go-gateway/public"
 	"net/http/httptest"
 	"strings"
 	"sync"
@@ -146,6 +147,28 @@ func (s *ServiceManager) HTTPAccessMode(c *gin.Context) (*model.ServiceDetail, e
 		}
 	}
 	return nil, errors.New("not matched services")
+}
+
+func (s *ServiceManager) GetTcpServiceList() []*model.ServiceDetail {
+	list := []*model.ServiceDetail{}
+	for _, serverItem := range s.ServiceSlice {
+		tempItem := serverItem
+		if tempItem.Info.LoadType == public.LoadType(1) {
+			list = append(list, tempItem)
+		}
+	}
+	return list
+}
+
+func (s *ServiceManager) GetGrpcServiceList() []*model.ServiceDetail {
+	list := []*model.ServiceDetail{}
+	for _, serverItem := range s.ServiceSlice {
+		tempItem := serverItem
+		if tempItem.Info.LoadType == public.LoadType(2) {
+			list = append(list, tempItem)
+		}
+	}
+	return list
 }
 
 func (s *ServiceManager) LoadAndWatch() error {
