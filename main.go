@@ -58,7 +58,6 @@ import (
 
 // @x-extension-openapi {"example": "value on a json format"}
 func main() {
-	// server.Migrate()
 	if err := lib.CmdExecute(); err != nil || lib.GetCmdPanelType() == "" {
 		os.Exit(1)
 	}

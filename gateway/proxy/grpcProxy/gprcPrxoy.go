@@ -58,7 +58,6 @@ func (h *HandlerCompose) handler (srv any, pxyServerStream grpc.ServerStream) er
 		return err
 	}
 
-
 	toRealServerErr := ProxyServerToRealServer(clientStream, pxyServerStream)
 	returnClientErr := ProxyServerToRealClient(pxyServerStream, clientStream)
 
