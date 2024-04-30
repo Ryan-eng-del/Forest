@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-gateway-proxy
+  namespace: forest
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: gateway-proxy-local-storage
+  local:
+    path: /data/forest-gateway-proxy/log
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-gateway-proxy
+  namespace: forest
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: gateway-proxy-local-storage
+---
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: forest-gateway-proxy
+  namespace: forest
+spec:
+  ports:
+    - port: 8080
+      name: "http"
+      targetPort: 8080
+      protocol: TCP
+      nodePort: 30080
+    - port: 4433
+      name: "https"
+      targetPort: 4433
+      protocol: TCP
+      nodePort: 30443
+  type: NodePort
+  selector:
+    name: forest-gateway-proxy-pod
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: forest-gateway-proxy
+  namespace: gateway
+spec:
+  selector:
+    matchLabels:
+      app: forest-gateway-proxy-pod
+  serviceName: svc-mysql
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: forest-gateway-proxy-pod
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: forest-gateway-proxy
+          image: forest-gateway:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8880
+            - containerPort: 4433
+          volumeMounts:
+            - name: gateway-proxy-log
+              mountPath: /go/src/app/logs
+      volumes:
+        - name: gateway-proxy-log
+          persistentVolumeClaim:
+            claimName: pvc-gateway-proxy

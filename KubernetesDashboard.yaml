@@ -2,15 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: forest-gateway-dashboard
+  namespace: forest
 spec:
   replicas: 3
   selector:
     matchLabels:
-      name: forest-gateway-dashboard
+      name: forest-gateway-dashboard-pod
     template:
       metadata:
         labels:
-          name: forest-gateway-dashboard
+          name: forest-gateway-dashboard-pod
       spec:
         containers:
           - name: forest-gateway-dashboard
@@ -23,6 +24,7 @@ apiVersion: apps/v1
 kind: Service
 metadata:
   name: forest-gateway-dashboard
+  namespace: forest
 spec:
   ports:
     - port: 8880

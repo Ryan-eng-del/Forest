@@ -2,18 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: forest-gateway
+  namespace: forest
 spec:
   replicas: 3
   selector:
     matchLabels:
-      name: forest-gateway
+      name: forest-pod
   template:
     metadata:
       labels:
-        name: forest-gateway
+        name: forest-pod
     spec:
       containers:
-        - name: forest-gateway
+        - name: forest-gateway-proxy
           image: forest-gateway:latest
           imagePollPolicy: Never
           ports:
@@ -24,6 +25,7 @@ apiVersion: apps/v1
 kind: Service
 metadata:
   name: forest-gateway
+  namespace: forest
 spec:
   ports:
     - port: 8080

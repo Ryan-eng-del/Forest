@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-gateway
+  namespace: forest
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: gateway-local-storage
+  local:
+    path: /data/forest-gateway/log
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-gateway
+  namespace: forest
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: gateway-local-storage
+---
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: forest-gateway-dashboard
+  namespace: forest
+spec:
+  ports:
+    - port: 8880
+      name: "dashboard"
+      targetPort: 8880
+      protocol: TCP
+      nodePort: 30088
+  type: NodePort
+  selector:
+    name: forest-gateway-dashboard-pod
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: forest-gateway-dashboard
+  namespace: gateway
+spec:
+  selector:
+    matchLabels:
+      app: forest-gateway-dashboard-pod
+  serviceName: svc-mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: forest-gateway-dashboard-pod
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: forest-gateway-dashboard
+          image: forest-gateway-dashboard:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8880
+          volumeMounts:
+            - name: gateway-log
+              mountPath: /go/src/app/logs
+      volumes:
+        - name: gateway-log
+          persistentVolumeClaim:
+            claimName: pvc-gateway
