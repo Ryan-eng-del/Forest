@@ -11,6 +11,12 @@ import (
 type LocalTime time.Time
 
 
+func Obj2Json(s interface{}) string {
+	bts, _ := json.Marshal(s)
+	return string(bts)
+}
+
+
 func (t LocalTime) Unix() int64 {
 	tTime := time.Time(t)
 	return tTime.Unix()
