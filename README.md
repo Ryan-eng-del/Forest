@@ -31,7 +31,7 @@ sh goBuildUnix.sh
 Windows:
 
 ```shell
-sh ./goBuildWin.bat
+./goBuildWin.bat
 ```
 
 ### K8s (Without Persistent Storage)
@@ -86,10 +86,23 @@ base.toml
 
 4. start server
 
+**start control panel server**
+
+```shell
+go run main.go run -c ./conf/dev/ -p control
+```
+
+**start proxy server**
+
+```shell
+go run main.go run -c ./conf/dev/ -p proxy
+
+```
+
+**start proxy server and panel server**
+
 ```shell
 go run main.go run -c ./conf/dev/ -p both
-go run main.go run -c ./conf/dev/ -p control (start control server)
-go run main.go run -c ./conf/dev/ -p proxy (start proxy server)
 ```
 
 ## 📜 Representations
