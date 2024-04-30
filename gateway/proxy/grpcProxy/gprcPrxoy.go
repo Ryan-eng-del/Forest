@@ -116,8 +116,6 @@ func ProxyServerToRealClient(dst grpc.ServerStream, src grpc.ClientStream) <- ch
 				res <- err
 				break
 			}
-
-
 			if err := dst.SendMsg(msg); err != nil {
 				res <- err
 				break
