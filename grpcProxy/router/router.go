@@ -3,6 +3,8 @@ package router
 import (
 	"fmt"
 	"go-gateway/grpcProxy"
+	"go-gateway/grpcProxy/middlewares"
+	"go-gateway/grpcProxy/unaryMiddlewares"
 	"go-gateway/handler"
 	"go-gateway/model"
 	"go-gateway/public"
@@ -59,8 +61,23 @@ func (g *GrpcManager) grpcOneServerRun(service *model.ServiceDetail) {
 
 	grpcHandler := grpcProxy.NewGrpcLoadBalanceHandler(rb)
 	s := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(),
-		grpc.ChainStreamInterceptor(),
+		grpc.ChainUnaryInterceptor(
+			unaryMiddlewares.GrpcFlowCountMiddleware(service),
+			unaryMiddlewares.GrpcFlowLimitMiddleware(service),
+			unaryMiddlewares.GrpcWhiteListMiddleware(service),
+			unaryMiddlewares.GrpcBlackListMiddleware(service),
+			unaryMiddlewares.GrpcJwtAuthTokenMiddleware(service),
+			unaryMiddlewares.GrpcHeaderTransferMiddleware(service),
+		),
+		grpc.ChainStreamInterceptor(
+			middlewares.GrpcFlowCountMiddleware(service),
+			middlewares.GrpcFlowLimitMiddleware(service),
+			middlewares.GrpcWhiteListMiddleware(service),
+			middlewares.GrpcBlackListMiddleware(service),
+			middlewares.GrpcJwtAuthTokenMiddleware(service),
+			middlewares.GrpcHeaderTransferMiddleware(service),
+
+		),
 		grpc.UnknownServiceHandler(grpcHandler),
 	)
 
