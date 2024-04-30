@@ -1,10 +1,12 @@
 package main
 
 import (
+	grpcProxyServer "go-gateway/grpcProxy/router"
 	"go-gateway/handler"
 	httpProxyServer "go-gateway/httpProxy/server"
 	lib "go-gateway/lib/conbra"
 	"go-gateway/server"
+	tcpProxyServer "go-gateway/tcpProxy/router"
 	"os"
 	"os/signal"
 	"syscall"
@@ -85,6 +87,13 @@ func StartProxy () {
 		httpProxyServer.ServerRun()
 	}()
 
+	go func ()  {
+		tcpProxyServer.TcpManagerHandler.TcpServerRun()
+	}()
+
+	go func ()  {
+		grpcProxyServer.GrpcManagerHandler.GrpcServerRun()
+	}()
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 	<- quit
